@@ -1,0 +1,470 @@
+
+//txtWNO工令号 txtPNO图号 cmbType工件类型 cmbPRNO请购单号 txtStats状态 
+
+Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
+    Select Case Button.Key
+        Case "Inquiry"
+                    GrdPR.AllowAddNew = False
+                    Call GetSoNeed(txtWNO.Text)
+        Case "Save"
+            Call SaveData
+        Case "Cancel"
+            Call CancelAll
+        Case "SelAll"
+            Call SelectAll
+        Case "Delete"
+            Call DelData
+        Case "Post"
+            Call Post
+        Case "Exit"
+            Unload Me
+    End Select
+End Sub
+
+//查询加载GrdBOM  GrdBOM工令BOM明细表格  GrdPR请购明细表格
+Private Function GetSoNeed(txtWNO.Text)
+    strNowSONO = txtWNO.Text
+    strNowPRNO = 0
+    GrdBOM.RemoveAll
+    StrSql = "select BomItm,bomseq,bomwno,bommno,bompno,bommat,bomreq,bomser,BOMRDT,bomnam,bomspc,bomuit " _
+            & "from tsfcbom where bomflg='Y' and bompry='N' and bomreq-bomisu>0 and BOMWNO ='" & strSONO & "'"
+    If Trim(cmbType.Text) <> "ALL" Then
+        StrSql = StrSql & " and bomtype='" & Left(Trim(cmbType.Text), 1) & "'"
+    End If
+    StrSql = StrSql & "  order by bompno,bomitm "
+    Set recRec = conn.Execute(StrSql)
+       
+    If Not recRec.EOF Then
+        txtPNO.Text = recRec.Fields("bommno").Value
+        While Not recRec.EOF
+            GrdBOM.AddItem False & vbTab & recRec.Fields("bomseq").Value & vbTab _
+                    & recRec.Fields("bompno").Value & vbTab & recRec.Fields("bomnam").Value & vbTab _
+                    & recRec.Fields("bommat").Value & vbTab & recRec.Fields("bomspc").Value & vbTab _
+                    & recRec.Fields("bomreq").Value & vbTab & recRec.Fields("bomuit").Value
+            recRec.MoveNext
+        Wend
+    End If
+End Function
+
+//页面初始化
+Private Sub Form_Load()
+    cmbType.Clear
+    StrSql = "select code+description from baseparameter where type='PT'"   //工件类型下拉
+    Set recRec = conn.Execute(StrSql)
+    cmbType.AddItem "ALL"
+    Do While Not recRec.EOF
+        cmbType.AddItem Trim(recRec.Fields(0).Value)
+        recRec.MoveNext
+    Loop
+End Sub
+
+//请购单号下拉数据
+Private Sub cmbPRNO_DropDown()
+    cmbPRNO.Clear
+    StrSql = "select distinct PRLNO from PURPRL,purprh where prhid='RH' and prhno=prlno and prhtyp='N' " _
+            & "and prhstat in('NE','UP','PS') and PRLID='RL' and PRLPONO=0 order by PRLNO "
+    Set recRec = conn.Execute(StrSql)
+    While Not recRec.EOF
+        cmbPRNO.AddItem recRec.Fields(0).Value
+        recRec.MoveNext
+    Wend
+End Sub
+
+//新增GrdPR请购明细 临时新增
+Private Sub CmdAdd_Click()
+    GrdBOM.MoveFirst
+    For i = 0 To GrdBOM.Rows - 1
+        If GrdBOM.Columns("勾选").Value = True Then
+            GrdPR.AddItem False & vbTab & False & vbTab & "" & vbTab & GrdBOM.Columns("工件号").Value _
+                    & vbTab & GrdBOM.Columns("名称").Value & vbTab & GrdBOM.Columns("材料").Value _
+                    & vbTab & GrdBOM.Columns("下料规格").Value & vbTab & GrdBOM.Columns("序号").Value _
+                    & vbTab & GrdBOM.Columns("需求数量").Value _
+                    & vbTab & GrdBOM.Columns("单位").Value & vbTab & GrdBOM.Columns("需求数量").Value - GetBOMPOQty(Trim(txtWNO), GrdBOM.Columns("序号").Value) & vbTab & ""
+        End If
+        GrdBOM.MoveNext
+    Next i
+    Call ReFreshGrd(GrdPR)
+End Sub
+
+//CmdAdd子方法
+Function GetBOMPOQty(strWNO As String, intSeq As Integer) As Integer
+    StrSql = "select sum(prlqty) as qty from purprl,purprh where prhid='RH' and prhno=prlno and prhtyp='N' and prlid='RL' and prlsord='" & strWNO & "' and prlsoseq=" & intSeq
+    Set recRec = conn.Execute(StrSql)
+    If Not IsNull(recRec!qty) Then
+        GetBOMPOQty = recRec!qty
+    Else
+        GetBOMPOQty = 0
+    End If
+    Exit Function
+End Function
+
+//删除GrdPR请购明细 临时删除
+Private Sub CmdDelete_Click()
+    GrdPR.MoveLast
+    strMark = GrdPR.Rows
+    For i = 0 To GrdPR.Rows - 1
+        If GrdPR.Columns("勾选").Value = True Then
+            GrdPR.RemoveItem (CLng(strMark - i - 1))
+        End If
+        GrdPR.MovePrevious
+    Next i
+    Call ReFreshGrd(GrdPR)
+End Sub
+
+//根据请购单号查询请购明细
+Private Sub cmbPRNO_Click()
+    Call Inquiry(cmbPRNO.Text)
+    txtStats.Text = GetStats(cmbPRNO.Text)
+End Sub
+
+//手动输入请购单号 按回车查询（asp.net中不需要）
+Private Sub cmbPRNO_KeyDown(KeyCode As Integer, Shift As Integer)
+    If KeyCode = &HD Then
+        SendKeys "{TAB}", True
+        Screen.MousePointer = 11
+        StrSql = "select count(*) from purprh where prhno=" & cmbPRNO.Text
+        Set recRec = conn.Execute(StrSql)
+        If recRec.Fields(0).Value <= 0 Then
+            MsgBox "无此请购单号!!", , "提示"
+            Exit Sub
+        Else
+            Call Inquiry(cmbPRNO.Text)
+        End If
+        Screen.MousePointer = 0
+    End If
+End Sub
+
+//根据请购单号查询请购明细GrdPR
+Private Function Inquiry(cmbPRNO.Text)
+    GrdPR.RemoveAll
+    StrSql = "select PRHSORD,prlnedm,prlsoseq,prhmno,prlmno,prltno,PRHSTAT,PRLSEQ,PRLPROD,PRLPDTE,PRLQTY,prlrule,prlsoseq,prlum,bomnam,bomreq,bommat" _
+            & " from PURPRH,PURPRL,tsfcbom where prlid='RL' and prhstat in('NE','UP','PS') and PRLNO=PRHNO " _
+            & "and PRLNO =" & lngPRNO & " and prlsord=bomwno and prlsoseq=bomseq order by prlseq "
+    Set recRec = conn.Execute(StrSql)
+    If Not recRec.EOF Then
+        txtPNO.Text = recRec.Fields("prhmno").Value
+        txtWNO.Text = recRec.Fields("PRHSORD").Value
+        txtStats.Text = recRec.Fields("PRHSTAT").Value
+        While Not recRec.EOF
+            GrdPR.AddItem IIf(recRec.Fields("prlnedm").Value = "Y", True, False) & vbTab & True & vbTab _
+                        & recRec.Fields("prlseq").Value & vbTab & recRec.Fields("prltno").Value _
+                        & vbTab & recRec.Fields("bomnam").Value & vbTab & recRec.Fields("bommat").Value _
+                        & vbTab & recRec.Fields("prlrule").Value & vbTab & recRec.Fields("prlsoseq").Value & vbTab & recRec.Fields("bomreq").Value _
+                        & vbTab & recRec.Fields("prlum").Value & vbTab & recRec.Fields("PRLQTY").Value & vbTab & recRec.Fields("PRLPDTE").Value
+            recRec.MoveNext
+        Wend
+        strNowPRNO = lngPRNO
+        strNowSONO = txtWNO.Text
+    End If    
+End Function
+
+//保存前检测
+Private Sub GrdPR_BeforeColUpdate(ByVal ColIndex As Integer, ByVal OldValue As Variant, Cancel As Integer)
+    If GrdPR.Col >= 0 Then
+        Select Case GrdPR.Columns(GrdPR.Col).Name
+            Case "Item No"
+                GrdPR.Columns("Item Desc").Text = GetItemDesc(GrdPR.Columns("Item No").Value)
+                GrdPR.Columns("UM").Text = GetItemUM(GrdPR.Columns("Item No").Value)
+                GrdPR.Columns("尺寸规格").Text = GetItemSIZ(GrdPR.Columns("Item No").Value)
+            Case "Plan Due"
+                If Len(GrdPR.Columns("Plan Due").Value) = 8 Then
+                    If GrdPR.Columns("Plan Due").Value <= Format(Date, "YYYYMMDD") Then
+                        MsgBox "日期须在明天以后!", , "提示"
+                        Exit Sub
+                    End If
+                Else
+                    MsgBox "日期格式错误!", , "提示"
+                    Exit Sub
+                End If
+        End Select
+    End If
+End Sub
+
+//保存请购明细GrdPR
+Private Function SaveData()
+    If GrdPR.Rows <= 0 Then
+        MsgBox "没有数据需要保存!", , "提示"
+        Exit Function
+    End If
+    For i = 0 To GrdPR.Rows - 1
+        If GrdPR.Columns("勾选").Value = True Then
+            j = j + 1
+            If IsLaterDate(GrdPR.Columns("需求日期").Value) = False Then
+                MsgBox "日期不能早于今天!", , "提示"
+                Exit Function
+            End If
+        End If
+    Next i
+
+    If j < 1 Then
+        MsgBox "未选中要保存的行！", , "提示"
+        Exit Function
+    End If
+
+    conn.BeginTrans
+    
+    If cmbPRNO.Text = "" Then  //新增
+        StrSql = "select max(prhno) from PURPRH "  //请购单号
+        Set recRec = conn.Execute(StrSql)
+        If Not IsNull(recRec.Fields(0).Value) Then
+            lngMaxNo = recRec.Fields(0).Value + 1
+        Else
+            lngMaxNo = 1
+        End If
+        lngMaxSeq = 1
+        If txtPNO.Text = "" Then
+            txtPNO.Text = " "
+        End If
+        StrSql = "insert into PURPRH values("
+        StrSql = StrSql & "'RH',"
+        StrSql = StrSql & lngMaxNo & ","
+        StrSql = StrSql & "'" & strNowSONO & "',"
+        StrSql = StrSql & "'" & txtPNO.Text & "',"
+        StrSql = StrSql & "'N',"
+        StrSql = StrSql & "'NE',"
+        StrSql = StrSql & "' ',"
+        StrSql = StrSql & "'" & StrUsername & "',"
+        StrSql = StrSql & ChgDatetoNum(GetDate()) & ","
+        StrSql = StrSql & "0,"
+        StrSql = StrSql & "'" & StrUsername & "',"
+        StrSql = StrSql & ChgDatetoNum(GetDate()) & ","
+        StrSql = StrSql & "0,"
+        StrSql = StrSql & "'" & Me.Caption & "'"
+        StrSql = StrSql & ")"
+        conn.Execute (StrSql)
+        
+        GrdPR.MoveFirst
+        For i = 0 To GrdPR.Rows - 1
+            If GrdPR.Columns("勾选").Value = True Then
+                StrSql = "insert into PURPRL(PRLID,PRLNO,PRLSEQ,PRLPROD,PRLQTY,PRLPACST,PRLPDTE,PRLDUE," _
+                        & "PRLRDTE,PRLFAC,PRLWHS,PRLCUR,PRLVND,PRLPLNC,PRLPONO,PRLSORD,PRLMNO,PRLTNO," _
+                        & "PRLSTATION,PRLPLNH,PRLRULE,PRLPMT,PRLAPR,PRLNEDM,PRLUM,PRLCBY,PRLCDTE,PRLCTM," _
+                        & "PRLAPBY,PRLAPDTE,PRLAPTM,PRLPGM,prlqcqty,PRLRTQ,PRLSOSEQ,PRLMRK) "
+                StrSql = StrSql & "values('RL',"
+                StrSql = StrSql & lngMaxNo & ","
+                StrSql = StrSql & lngMaxSeq & ","
+                StrSql = StrSql & "'RL',"
+                StrSql = StrSql & GrdPR.Columns("请购数量").Value & ","
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & GrdPR.Columns("需求日期").Value & ","
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'RL',"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'" & strNowSONO & "',"
+                StrSql = StrSql & "'" & txtPNO.Text & "',"
+                StrSql = StrSql & "'" & GrdPR.Columns("工件号").Value & "',"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'" & GrdPR.Columns("下料规格").Value & "',"
+                StrSql = StrSql & "'N',"
+                StrSql = StrSql & "'N',"
+                StrSql = StrSql & "'" & IIf(GrdPR.Columns("急件").Value = True, "Y", " ") & "',"
+                StrSql = StrSql & "'" & GrdPR.Columns("单位").Value & "',"
+                StrSql = StrSql & "'" & StrUsername & "',"
+                StrSql = StrSql & ChgDatetoNum(GetDate()) & ","
+                StrSql = StrSql & ChgTimeToNum(GetTime()) & ","
+                StrSql = StrSql & "'" & StrUsername & "',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'" & Me.Caption & "'"
+                StrSql = StrSql & ",0,0," & GrdPR.Columns("工令序号").Value & ",' ')"
+                conn.Execute (StrSql)
+               
+                StrSql = "update tsfcbom set bompry='Y' where bomflg='Y' and bomwno='" & strNowSONO & "' " _
+                        & "and bompno='" & GrdPR.Columns("工件号").Value & "' "
+                
+                lngMaxSeq = lngMaxSeq + 1
+            End If
+            GrdPR.MoveNext
+        Next i
+        
+    Else    '修改请购单
+        GrdPR.MoveFirst
+        StrSql = "delete from purprh where prhno=" & cmbPRNO
+        conn.Execute (StrSql)
+        StrSql = "delete from purprl where prlno=" & cmbPRNO
+        conn.Execute (StrSql)
+        
+        lngMaxNo = cmbPRNO.Text
+        StrSql = "insert into PURPRH values("
+        StrSql = StrSql & "'RH',"
+        StrSql = StrSql & cmbPRNO & ","
+        StrSql = StrSql & "'" & strNowSONO & "',"
+        StrSql = StrSql & "'" & txtPNO.Text & "',"
+        StrSql = StrSql & "'N',"
+        StrSql = StrSql & "'NE',"
+        StrSql = StrSql & "' ',"
+        StrSql = StrSql & "'" & StrUsername & "',"
+        StrSql = StrSql & ChgDatetoNum(GetDate()) & ","
+        StrSql = StrSql & "0,"
+        StrSql = StrSql & "'" & StrUsername & "',"
+        StrSql = StrSql & ChgDatetoNum(GetDate()) & ","
+        StrSql = StrSql & "0,"
+        StrSql = StrSql & "'" & Me.Caption & "'"
+        StrSql = StrSql & ")"
+        conn.Execute (StrSql)
+        
+        GrdPR.MoveFirst
+        For i = 0 To GrdPR.Rows - 1
+            If GrdPR.Columns("勾选").Value = True Then
+                
+                StrSql = "insert into PURPRL(PRLID,PRLNO,PRLSEQ,PRLPROD,PRLQTY,PRLPACST,PRLPDTE,PRLDUE," _
+                        & "PRLRDTE,PRLFAC,PRLWHS,PRLCUR,PRLVND,PRLPLNC,PRLPONO,PRLSORD,PRLMNO,PRLTNO," _
+                        & "PRLSTATION,PRLPLNH,PRLRULE,PRLPMT,PRLAPR,PRLNEDM,PRLUM,PRLCBY,PRLCDTE,PRLCTM," _
+                        & "PRLAPBY,PRLAPDTE,PRLAPTM,PRLPGM,prlqcqty,PRLRTQ,PRLSOSEQ,PRLMRK) "
+                StrSql = StrSql & "values('RL',"
+                StrSql = StrSql & cmbPRNO & ","
+                StrSql = StrSql & i + 1 & ","
+                StrSql = StrSql & "'RL',"
+                StrSql = StrSql & GrdPR.Columns("请购数量").Value & ","
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & GrdPR.Columns("需求日期").Value & ","
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'RL',"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'" & strNowSONO & "',"
+                StrSql = StrSql & "'" & txtPNO.Text & "',"
+                StrSql = StrSql & "'" & GrdPR.Columns("工件号").Value & "',"
+                StrSql = StrSql & "' ',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'" & GrdPR.Columns("下料规格").Value & "',"
+                StrSql = StrSql & "'N',"
+                StrSql = StrSql & "'N',"
+                StrSql = StrSql & "'" & IIf(GrdPR.Columns("急件").Value = True, "Y", " ") & "',"
+                StrSql = StrSql & "'" & GrdPR.Columns("单位").Value & "',"
+                StrSql = StrSql & "'" & StrUsername & "',"
+                StrSql = StrSql & ChgDatetoNum(GetDate()) & ","
+                StrSql = StrSql & ChgTimeToNum(GetTime()) & ","
+                StrSql = StrSql & "'" & StrUsername & "',"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "0,"
+                StrSql = StrSql & "'" & Me.Caption & "'"
+                StrSql = StrSql & ",0,0," & GrdPR.Columns("工令序号").Value & ",' ')"
+                conn.Execute (StrSql)
+               
+                StrSql = "update tsfcbom set bompry='Y' where bomflg='Y' and bomwno='" & strNowSONO & "' " _
+                        & "and bompno='" & GrdPR.Columns("工件号").Value & "' "
+                
+            End If
+            GrdPR.MoveNext
+        Next i
+        
+        StrSql = "update PURPRH set PRHSTAT ='UP'"
+        StrSql = StrSql & " where PRHNO =" & cmbPRNO.Text
+        conn.Execute (StrSql)
+    End If
+    
+    conn.CommitTrans
+    cmbPRNO.Text = lngMaxNo
+    strNowPRNO = lngMaxNo
+    txtStats.Text = GetStats(lngMaxNo)
+    Call Inquiry(cmbPRNO.Text)
+    
+    MsgBox "保存成功!", , "提示"
+    tblOperate.Buttons("Post").Enabled = True
+    Exit Function
+End Function
+
+Private Function CancelAll()
+    cmbPRNO.Text = ""
+    GrdPR.RemoveAll
+    tblOperate.Buttons("Post").Enabled = False
+End Function
+
+Private Function GetStats(lngPRNO As Long) As String
+
+    StrSql = "select PRHSTAT from PURPRH where PRHNO =" & lngPRNO
+    Set recRec = conn.Execute(StrSql)
+    GetStats = recRec.Fields("PRHSTAT").Value
+  
+End Function
+
+Private Function Post()
+    IntAnswer = MsgBox("确定要提交吗？", vbYesNo, "提示")
+    If IntAnswer = vbNo Then
+        Exit Function
+    End If
+    
+        StrSql = "update PURPRH set PRHSTAT ='PS'"
+        StrSql = StrSql & " where PRHNO =" & strNowPRNO
+        conn.Execute (StrSql)
+
+    txtStats.Text = GetStats(CLng(strNowPRNO))
+    MsgBox "提交成功!", , "提示"
+    Exit Function
+End Function
+
+Private Function SelectAll()
+Dim i As Integer
+    If GrdPR.Rows > 0 Then
+        GrdPR.MoveFirst
+        For i = 0 To GrdPR.Rows - 1
+            GrdPR.Columns("勾选").Value = True
+            GrdPR.MoveNext
+        Next i
+    End If
+End Function
+
+Private Function DelData()
+    If strNowPRNO = 0 Then
+        MsgBox "请先保存!", , "提示"
+        Exit Function
+    End If
+    
+    IntAnswer = MsgBox("是否确认删除!?", vbYesNo, "提示")
+    If IntAnswer = vbNo Then
+        Exit Function
+    End If
+    conn.BeginTrans
+    
+    If GrdPR.Rows > 0 Then
+        GrdPR.MoveFirst
+        For i = 0 To GrdPR.Rows - 1
+            If GrdPR.Columns("勾选").Value = True And GrdPR.Columns("序号").Value > 0 Then
+                StrSql = "select prlrtq,prlpono from PURPRL "
+                StrSql = StrSql & " where PRLNO =" & strNowPRNO
+                StrSql = StrSql & " and  PRLSEQ =" & GrdPR.Columns("序号").Value
+                Set recRec = conn.Execute(StrSql)
+                If recRec.Fields(0).Value > 0 Then
+                    MsgBox "第 " & GrdPR.Columns("序号").Value & "条已经入库, 请先取消入库!", , "提示"
+                    conn.RollbackTrans
+                    Exit Function
+                End If
+
+                StrSql = "update PURPRL set PRLID ='RZ' "
+                StrSql = StrSql & " where PRLNO =" & strNowPRNO
+                StrSql = StrSql & " and  PRLSEQ =" & GrdPR.Columns("序号").Value
+                conn.Execute (StrSql)
+                
+                StrSql = "update TSFCBOM set BOMPRY ='N' "
+                StrSql = StrSql & " where BOMPRY='Y' and BOMWNO =" & txtWNO.Text
+                StrSql = StrSql & " and  BOMpno =" & GrdPR.Columns("工件号").Value
+                conn.Execute (StrSql)
+            ElseIf GrdPR.Columns("序号").Value = "" Then
+                MsgBox "请先保存!", , "提示"
+                Exit Function
+            End If
+            GrdPR.MoveNext
+        Next i
+    End If
+    conn.CommitTrans
+    If strNowPRNO <> 0 Then
+        Call Inquiry(CLng(strNowPRNO))
+    End If
+    MsgBox "删除成功!", , "提示"
+    Exit Function
+ErrHandle:
+    conn.RollbackTrans
+End Function
+
+
