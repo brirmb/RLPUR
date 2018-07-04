@@ -1,0 +1,51 @@
+
+//txtWNO工令号 Text2图号 cmbType工件类型 Combo1请购单号 txtStatus状态 
+
+Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
+    Select Case Button.Key
+        Case "Inquiry"
+            Call GetSoNeed(txtWNO.Text)
+        Case "Save"
+            Call SaveData
+        Case "Cancel"
+            Call CancelAll
+        Case "Delete"    //无此操作
+            Call DelData
+        Case "SelAll"
+            Call SelectAll
+        Case "Post"      //无此操作
+            Call Post
+        Case "Exit"
+            Unload Me
+    End Select
+End Sub
+
+//GrdBOM工令BOM清单  GrdPR请购明细
+
+//根据请购单号查询请购明细GrdPR
+Private Function InquiryPR(lngPRNO As Long)
+    GrdPR.RemoveAll
+    StrSql = "select pRHSORD,prlnedm,prlsoseq,prhmno,prlmno,prltno,PRHSTAT,PRLSEQ,PRLPROD,PRLPDTE,PRLQTY,prlrule,prlum,prlstation,bommat,bomnam,bomseq,bomreq" _
+            & " from purprh,purprl,tsfcbom where prlid='RL' and prhstat in('NE','UP','PS') and PRLNO=PRHNO " _
+            & "and prlsord=bomwno and prlsoseq=bomseq and PRLNO =" & lngPRNO & " order by prlseq "
+    Set recRec = conn.Execute(StrSql)
+    If Not recRec.EOF Then
+        Text2.Text = recRec.Fields("prhmno").Value
+        txtWNO.Text = recRec.Fields("PRHSORD").Value
+        
+        txtStats.Text = recRec.Fields("PRHSTAT").Value
+        
+        While Not recRec.EOF
+            GrdPR.AddItem IIf(recRec.Fields("prlnedm").Value = "Y", True, False) & vbTab & True & vbTab _
+                        & recRec.Fields("prlseq").Value & vbTab & recRec.Fields("prltno").Value _
+                        & vbTab & recRec.Fields("bomnam").Value & vbTab & recRec.Fields("bommat").Value _
+                        & vbTab & recRec.Fields("prlrule").Value & vbTab & recRec.Fields("prlsoseq").Value _
+                        & vbTab & recRec.Fields("bomreq").Value & vbTab & recRec.Fields("prlum").Value _
+                        & vbTab & recRec.Fields("prlstation").Value & vbTab & recRec.Fields("PRLqty").Value _
+                        & vbTab & recRec.Fields("PRLPDTE").Value
+            recRec.MoveNext
+        Wend
+        strNowPRNO = lngPRNO
+        strNowSONO = txtWNO.Text
+    End If
+End Function

@@ -12,9 +12,9 @@ Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
             Call CancelAll
         Case "SelAll"
             Call SelectAll
-        Case "Delete"
+        Case "Delete"     //无此操作
             Call DelData
-        Case "Post"
+        Case "Post"       //无此操作
             Call Post
         Case "Exit"
             Unload Me
