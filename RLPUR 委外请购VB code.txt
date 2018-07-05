@@ -32,7 +32,6 @@ Private Function InquiryPR(lngPRNO As Long)
     If Not recRec.EOF Then
         Text2.Text = recRec.Fields("prhmno").Value
         txtWNO.Text = recRec.Fields("PRHSORD").Value
-        
         txtStats.Text = recRec.Fields("PRHSTAT").Value
         
         While Not recRec.EOF
@@ -49,3 +48,6 @@ Private Function InquiryPR(lngPRNO As Long)
         strNowSONO = txtWNO.Text
     End If
 End Function
+
+
+
