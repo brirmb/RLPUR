@@ -137,7 +137,7 @@ End Sub
 //根据请购单号查询请购明细GrdPR
 Private Function Inquiry(cmbPRNO.Text)
     GrdPR.RemoveAll
-    StrSql = "select PRHSORD,prlnedm,prlsoseq,prhmno,prlmno,prltno,PRHSTAT,PRLSEQ,PRLPROD,PRLPDTE,PRLQTY,prlrule,prlsoseq,prlum,bomnam,bomreq,bommat" _
+    StrSql = "select pRHSORD,prlnedm,prlsoseq,prhmno,prlmno,prltno,PRHSTAT,PRLSEQ,PRLPROD,PRLPDTE,PRLQTY,prlrule,prlum,prlstation,bommat,bomnam,bomseq,bomreq" _
             & " from PURPRH,PURPRL,tsfcbom where prlid='RL' and prhstat in('NE','UP','PS') and PRLNO=PRHNO " _
             & "and PRLNO =" & lngPRNO & " and prlsord=bomwno and prlsoseq=bomseq order by prlseq "
     Set recRec = conn.Execute(StrSql)

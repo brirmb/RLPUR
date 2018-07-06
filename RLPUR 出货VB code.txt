@@ -1,0 +1,102 @@
+
+//TxtShIP出货单号  TxtSONO工令号 TxtRDate合同需求日期 DTPicker1出货日期
+
+Private Sub TxtShIP_Change()
+    GrdSHIP.RemoveAll
+    StrSql = "select * from shiping,contract where shipno='" & Trim(TxtShIP) & "' and left(shipsono,7)=ordno "
+    Set RecSet = conn.Execute(StrSql)
+    Do While Not RecSet.EOF
+        TxtSONO = Trim(RecSet("shipsono"))
+        TxtCustNo = RecSet!shipcustno
+        TxtCustName = Trim(RecSet("shipcustname"))
+        TxtRDate.Value = IntToDate("-", RecSet("deliverydate"))
+        GrdSHIP.AddItem False & vbTab & RecSet("shipseq") & vbTab & RecSet("shipmno") & vbTab & RecSet("shipname") _
+                & vbTab & RecSet("shipqreq") & vbTab & RecSet("shipunit") & vbTab _
+                & RecSet("shipqplan") - RecSet("shipqact") & vbTab & RecSet("shipqplan") - RecSet("shipqact")
+        RecSet.MoveNext
+    Loop
+End Sub
+
+//保存
+Private Function SaveDate()
+    For i = 1 To GrdSHIP.Rows
+        If GrdSHIP.Columns("勾选").Value = True Then
+            j = j + 1
+            If val(GrdSHIP.Columns("出货数量").Value) > val(GrdSHIP.Columns("计划出货数量").Value) Then
+                MsgBox "出货数量不能大于计划出货数量！", , "提示"
+                Exit Function
+            End If
+        End If
+        GrdSHIP.MoveNext
+    Next i
+    If j = 0 Then
+        MsgBox "未勾选任意行！", , "提示"
+        Exit Function
+    End If
+
+    StrSql = "select * from baseparameter where type='WH' and code='1'"
+    Set RecSet = conn.Execute(StrSql)
+    If Not RecSet.EOF Then
+        StrWHS = Trim(RecSet("description"))
+    End If
+
+    GrdSHIP.MoveFirst
+    conn.BeginTrans
+    For i = 1 To GrdSHIP.Rows
+        If GrdSHIP.Columns("勾选").Value = True Then
+            StrSql = "update shiping set shipqact=shipqact+" & GrdSHIP.Columns("出货数量").Value & " where shipno='" _
+                & Trim(TxtShIP) & "' and shipseq=" & GrdSHIP.Columns("序号").Value
+            conn.Execute StrSql
+            
+            StrSql = "select * from inventory where whcode='" & StrWHS & "' and pono='" & Trim(GrdSHIP.Columns("图号").Value) & "'"
+            Set RecSet = conn.Execute(StrSql)
+            If RecSet.EOF Then
+                StrSql = "insert into inventory values('" & StrWHS & "','" & Trim(GrdSHIP.Columns("图号").Value) _
+                    & "','','','" & GrdSHIP.Columns("名称").Value & "'," & -1 * GrdSHIP.Columns("出货数量").Value _
+                    & ",'" & Trim(GrdSHIP.Columns("单位").Value) & "')"
+            Else
+                StrSql = "update inventory set qty=qty-" & GrdSHIP.Columns("出货数量").Value _
+                    & " where whcode='" & StrWHS & "' and pono='" & Trim(GrdSHIP.Columns("图号").Value) & "'"
+            End If
+            conn.Execute StrSql
+  
+            StrSql = "insert into trans_detail values('" & TxtSONO & "','" & Trim(GrdSHIP.Columns("图号").Value) _
+                & "','" & StrWHS & "'," & Trim(GrdSHIP.Columns("出货数量").Value) & ",'" & Date & "'," _
+                & "'" & TxtShIP & "','" & Left(Trim(TxtSONO), 7) & "','B')"
+            conn.Execute StrSql
+            
+            StrSql = "update shiping set shipstatus=1 where shipno='" & TxtShIP & "' and shipseq=" & GrdSHIP.Columns("序号").Value _
+                & " and shipqplan=shipqact"
+            conn.Execute StrSql
+            
+            StrSql = "select * from contratdetail,contract where contratdetail.ordno=contract.ordno " _
+                    & " and contract.ordno='" & Trim(TxtSONO) & "' and seq=" & Trim(GrdSHIP.Columns("序号").Value)
+            Set RecSet = conn.Execute(StrSql)
+            If Not RecSet.EOF Then
+                DbAmt = GrdSHIP.Columns("出货数量").Value * RecSet!unitprice
+                StrLastDate = DateAdd("m", val(RecSet!protectterm) * 12, DTPicker1.Value)
+            End If
+            StrSql = "insert into zhibaojin values('" & Trim(TxtShIP) & "','" _
+                    & Trim(TxtSONO) & "'," _
+                    & Trim(GrdSHIP.Columns("序号").Value) & ",'" _
+                    & Trim(GrdSHIP.Columns("名称").Value) & "','" _
+                    & Trim(GrdSHIP.Columns("图号").Value) & "'," _
+                    & Trim(TxtCustNo) & ",'" _
+                    & Trim(TxtCustName) & "'," _
+                    & Trim(GrdSHIP.Columns("出货数量").Value) & "," _
+                    & DbAmt & ",0,'" _
+                    & DTPicker1.Value & "','" _
+                    & Time & "'," _
+                    & RecSet!protectterm & ",'" _
+                    & StrLastDate & "')"
+            conn.Execute StrSql
+            
+        End If
+        GrdSHIP.MoveNext
+    Next i
+
+    conn.CommitTrans
+    MsgBox "出货完成！", , "提示"
+    Call ClearTxt
+    Exit Function
+End Function

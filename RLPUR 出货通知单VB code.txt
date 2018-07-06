@@ -1,0 +1,105 @@
+
+//TxtShipNO出货单号  TxtSONO工令号
+Private Sub Toolbar1_ButtonClick(ByVal Button As MSComctlLib.Button)
+Select Case Button.Key
+    Case "OK"
+        Call SaveDate    
+    Case "Print"     //无此功能
+        Call PrtST      
+    Case "Quit"
+        Unload Me
+End Select
+End Sub
+
+Private Sub TxtSONO_Change()
+    GrdSHIP.RemoveAll
+    StrSql = "select a.*,b.*,rcnam from contract a,contratdetail b,salrcm where a.ordno=b.ordno and a.custno=rccust " _
+            & "and a.ordno='" & Left(Trim(TxtSONO), 7) & "' order by seq"
+    Set RecSet = conn.Execute(StrSql)
+    If Not RecSet.EOF Then
+        TxtCustNO = Trim(RecSet("custno"))
+        TxtCustName = Trim(RecSet("rcnam"))
+        TxtRDate = RecSet("deliverydate")
+        
+        Do While Not RecSet.EOF
+            StrSql = "select sum(shipqact) rqty from shiping where shipsono='" & Trim(RecSet("ordno")) & "' and shipseq=" & RecSet("seq")
+            Set rectmp = conn.Execute(StrSql)
+            If IsNull(rectmp!rqty) Then
+                intqty = 0
+            Else
+                intqty = rectmp!rqty
+            End If
+            GrdSHIP.AddItem False & vbTab & RecSet("seq") & vbTab & RecSet("drawno") & vbTab & RecSet("itemno") _
+                    & vbTab & RecSet("ordqty") & vbTab & RecSet("um") & vbTab & RecSet("ordqty") - intqty
+            RecSet.MoveNext
+        Loop
+    End If
+End Sub
+
+Private Function SaveDate()
+    Dim i, j As Integer
+    Dim StrSTNO As String
+
+    If GrdSHIP.Rows = 0 Then
+        Exit Function
+    End If
+
+    For i = 1 To GrdSHIP.Rows
+        If GrdSHIP.Columns("勾选").Value = True Then
+            j = j + 1
+            If Trim(GrdSHIP.Columns("出货日期").Value) = "" Then
+                MsgBox "请填写出货日期！", , "提示"
+                Exit Function
+            End If
+            If val(GrdSHIP.Columns("计划出货数量").Value) > val(GrdSHIP.Columns("未出货数量").Value) Then
+                MsgBox "出货数量不能大于未出货数量！", , "提示"
+                Exit Function
+            End If
+            StrSql = "select * from morder where mono='" & GrdSHIP.Columns("任务单号码").Value & "'"
+            Set RecSet = conn.Execute(StrSql)
+            If RecSet.EOF Then
+                StrSql = "select * from beipingongling where bpsono='" & GrdSHIP.Columns("任务单号码").Value & "'"
+                Set RecSet = conn.Execute(StrSql)
+                If RecSet.EOF Then
+                    MsgBox "任务的号码有误！", , "提示"
+                    Exit Function
+                End If
+            End If
+            
+        End If
+        GrdSHIP.MoveNext
+    Next i
+    If j = 0 Then
+        MsgBox "未勾选任意行！", , "提示"
+        Exit Function
+    End If
+
+    StrSql = "select description from baseparameter where type='ST' and code='NO'"
+    Set RecSet = conn.Execute(StrSql)
+    If Not RecSet.EOF Then
+        If Mid(RecSet.Fields(0).Value, 3, 2) = Mid(Trim(GetDate()), 3, 2) Then
+            StrSTNO = Left(RecSet.Fields(0).Value, 4) + Format(Trim(val(Right(RecSet.Fields(0).Value, 5)) + 1), "00000")
+        Else
+            StrSTNO = Left(RecSet.Fields(0).Value, 2) + Mid(Trim(GetDate()), 3, 2) + Format(val(Right(RecSet.Fields(0).Value, 5) + 1), "00000")
+        End If
+    Else
+        StrSTNO = "ST" + Mid(Trim(GetDate()), 3, 2) + "00001"
+    End If
+
+    StrSql = "update baseparameter set description='" & StrSTNO & "' where type='ST' and code='NO'"
+    conn.Execute StrSql
+
+    GrdSHIP.MoveFirst
+    For i = 1 To GrdSHIP.Rows
+        If GrdSHIP.Columns("勾选").Value = True Then
+            StrSql = "insert into shiping values('" & StrSTNO & "'," & i & ",'" & GrdSHIP.Columns("任务单号码").Value & "','" & Trim(TxtSONO) & "','" & Trim(GrdSHIP.Columns("图号").Value) _
+                & "'," & TxtCustNO & ",'" & Trim(TxtCustName) & "','" & Trim(GrdSHIP.Columns("名称").Value) _
+                & "','" & GrdSHIP.Columns("单位").Value & "'," & GrdSHIP.Columns("需求数量").Value & "," & GrdSHIP.Columns("计划出货数量").Value _
+                & ",0," & GrdSHIP.Columns("出货日期").Value & ",0)"
+            conn.Execute StrSql
+        End If
+        GrdSHIP.MoveNext
+    Next i
+    TxtShipNO.Text = StrSTNO
+    MsgBox "保存成功！", , "提示"
+End Function
