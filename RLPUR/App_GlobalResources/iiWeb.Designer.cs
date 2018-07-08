@@ -439,7 +439,7 @@ namespace Resources {
         }
         
         /// <summary>
-        ///   查找类似 瑞尔请购系统 的本地化字符串。
+        ///   查找类似 采购与出货系统 的本地化字符串。
         /// </summary>
         internal static string SystemName {
             get {

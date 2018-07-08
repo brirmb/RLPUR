@@ -8,30 +8,202 @@ namespace RLPUR.Models
 {
     public class PurProvider : LocalDbProvider
     {
-        #region
+        #region 请购
 
         /// <summary>
-        /// 查询合同概况
+        /// 工令BOM明细查询
         /// </summary>
-        public DataTable GetContractHeadInfo(string no)
+        public DataTable GetBOMList(string orNo, string bomType)
         {
-            string sql = string.Format(" SELECT ORDNO,ORDNAME,CUSTNO,CUSTNAME,CURR,SIGNDATE, DELIVERYDATE,PROTECTTERM,SCH_YF,SCH_JD,SCH_TH,SCH_ZB,ORDAMT,REMARK  FROM contract WHERE OHID='Y' AND ORDNO = N'{0}'", no);
+            string sql = string.Format(" select BomItm,bomseq,bomwno,bommno,bompno,bommat,bomreq,bomser,BOMRDT,bomnam,bomspc,bomuit from tsfcbom where bomflg='Y' and bompry='N' and bomreq-bomisu>0 and BOMWNO =N'{0}'", orNo);
+
+            if (!string.IsNullOrWhiteSpace(bomType))
+            {
+                sql += string.Format(" and bomtype=N'{0}' ", bomType);
+            }
+
+            sql += " order by bompno,bomitm ";
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购明细列表
+        /// </summary>
+        public DataTable GetPRDetailList(string prNo)
+        {
+            string sql = string.Format("select pRHSORD,prlnedm,prlsoseq,prhmno,prlmno,prltno,PRHSTAT,PRLSEQ,PRLPROD,PRLPDTE,PRLQTY,prlrule,prlum,prlstation,bommat,bomnam,bomseq,bomreq from purprh,purprl,tsfcbom where prlid='RL' and prhstat in('NE','UP','PS') and PRLNO=PRHNO and prlsord=bomwno and prlsoseq=bomseq and PRLNO =N'{0}' order by prlseq ", prNo);
 
             return this.Query(sql);
         }
 
         /// <summary>
-        /// 新增合同sql
+        /// 获取请购单号 prType:N一般请购,F委外请购
         /// </summary>
-        public string InsertContractSql(string orNo, string orName, string custNo, string custName, string curr, string signDate, string deliverDate, string term, string yf, string jd, string th, string zb, string orAmt, string remark, string sysUsername, string strDate, string strTime)
+        public DataTable GetPRNoList(string prType)
         {
-            string sql = string.Format("INSERT INTO CONTRACT (ohid,ordno,ordname,custno,custname,curr,SignDate,DeliveryDate,ProtectTerm,sch_yf,sch_JD,sch_TH,sch_ZB,ordamt,Remark,createuser,createdate,createtime,lastuser,lastudate,lastutime) VALUES('Y',N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{5}',N'{6}',N'{7}',N'{8}',N'{9}',N'{10}',N'{11}',N'{12}',N'{13}',N'{14}',N'{15}',N'{16}',N'{17}',N'{18}',N'{19}') ",
-                orNo, orName, custNo, custName, curr, signDate, deliverDate, term, yf, jd, th, zb, orAmt, remark, sysUsername, strDate, strTime, sysUsername, strDate, strTime
+            string sql = string.Format("select distinct PRLNO from PURPRL,purprh where prhid='RH' and prhno=prlno and prhtyp=N'{0}' and prhstat in('NE','UP','PS') and PRLID='RL' and PRLPONO=0 order by PRLNO ", prType);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购单状态
+        /// </summary>
+        public string GetPRStatus(string prNo)
+        {
+            var row = GetPRDetail(prNo);
+            if (row == null)
+            {
+                return string.Empty;
+            }
+            else
+            {
+                return row["PRHSTAT"].ToString();
+            }
+        }
+
+        /// <summary>
+        /// 查询请购明细（状态等）
+        /// </summary>
+        public DataRow GetPRDetail(string prNo)
+        {
+            string sql = string.Format(" select * from PURPRH where PRHNO =N'{0}' ", prNo);
+
+            var table = this.Query(sql);
+            if (table != null && table.Rows.Count == 1)
+            {
+                return table.Rows[0];
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 获取bom请购数量 prType:N一般请购,F委外请购
+        /// </summary>
+        public int GetBOMQty(string orNo, string bomSeq, string prType)
+        {
+            string sql = string.Format("select sum(prlqty) as qty from purprl,purprh where prhid='RH' and prhno=prlno and prhtyp=N'{2}' and prlid='RL' and prlsord=N'{0}' and prlsoseq=N'{1}' ", orNo, bomSeq, prType);
+
+            var obj = this.ExecuteScalar(sql);
+            if (obj != null)
+            {
+                return Util.ToInt(obj.ToString()); ;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// 获取请购单号数量
+        /// </summary>
+        public int GetPRNoCount(string prNo)
+        {
+            string sql = string.Format("select count(*) from purprh where prhno=N'{0}' ", prNo);
+
+            var obj = this.ExecuteScalar(sql);
+            if (obj != null)
+            {
+                return Util.ToInt(obj.ToString()); ;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// 获取最大请购单号
+        /// </summary>
+        public int GetMaxPRNo()
+        {
+            string sql = " select max(prhno) from PURPRH ";
+
+            var obj = this.ExecuteScalar(sql);
+            if (obj != null)
+            {
+                return Util.ToInt(obj.ToString()) + 1; ;
+            }
+            else
+            {
+                return 1;
+            }
+        }
+
+        /// <summary>
+        /// 新增请购单头表sql prType:N一般请购,F委外请购 prTypeDesc:一般请购、委外请购、材料请购
+        /// </summary>
+        public string InsertPRSql(string prNo, string orNo, string drawNo, string prType, string prTypeDesc, string sysUsername, string strDate)
+        {
+            string sql = string.Format("INSERT INTO PURPRH VALUES('RH',N'{0}',N'{1}',N'{2}',N'{3}','NE',' ',N'{4}',N'{5}',0,N'{6}',N'{7}',0,N'{8}') ",
+                prNo, orNo, drawNo, prType, sysUsername, strDate, sysUsername, strDate, prTypeDesc
                 );
+            return sql;
+        }
+
+        /// <summary>
+        /// 修改请购头表状态为更新 Sql
+        /// </summary>
+        public string UpdatePRStatusSql(string prNo)
+        {
+            string sql = string.Format("update PURPRH set PRHSTAT ='UP' where PRHNO=N'{0}' ", prNo);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 删除请购头表Sql
+        /// </summary>
+        public string DeletePRSql(string prNo)
+        {
+            string sql = string.Format("delete from purprh where prhno=N'{0}' ", prNo);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 新增请购明细表sql 
+        /// </summary>
+        public string InsertPRDetailSql(string prNo, string prSeq, string prlprod, string prQty, string prDate, string prlrdte, string prlfac, string orNo, string drawNo, string prltno, string prlstation, string prlrule, string isUrgent, string um, string sysUsername, string strDate, string strTime, string prTypeDesc, string orSeq)
+        {
+            string sql = string.Format("INSERT INTO PURPRL(PRLID,PRLNO,PRLSEQ,PRLPROD,PRLQTY,PRLPACST,PRLPDTE,PRLDUE,PRLRDTE,PRLFAC,PRLWHS,PRLCUR,PRLVND,PRLPLNC,PRLPONO,PRLSORD,PRLMNO,PRLTNO,PRLSTATION,PRLPLNH,PRLRULE,PRLPMT,PRLAPR,PRLNEDM,PRLUM,PRLCBY,PRLCDTE,PRLCTM,PRLAPBY,PRLAPDTE,PRLAPTM,PRLPGM,prlqcqty,PRLRTQ,PRLSOSEQ,PRLMRK) VALUES('RL',N'{0}',N'{1}',N'{16}',N'{2}',0,N'{3}',N'{17}',0,N'{18}',' ',' ',0,' ',0,N'{4}',N'{5}',N'{6}',N'{19}',0,N'{7}','N','N',N'{8}',N'{9}',N'{10}',N'{11}',N'{12}',N'{13}',0,0,N'{14}',0,0,N'{15}',' ') ",
+                prNo, prSeq, prQty, prDate, orNo, drawNo, prltno, prlrule, isUrgent, um, sysUsername, strDate, strTime, sysUsername, prTypeDesc, orSeq, prlprod, prlrdte, prlfac, prlstation
+                );
+            return sql;
+        }
+
+        /// <summary>
+        /// 删除请购明细表Sql
+        /// </summary>
+        public string DeletePRDetailSql(string prNo)
+        {
+            string sql = string.Format("delete from purprl where prlno=N'{0}' ", prNo);
+
             return sql;
         }
 
         #endregion
 
+        #region 配置
+
+        /// <summary>
+        /// 查询基础配置 UM单位 交易条件TC 币别CY 区域AR 付款方式PY 业务员CK 税率TX 工件类型PT
+        /// </summary>
+        public DataTable GetBaseParam(string type, string code)
+        {
+            string sql = string.Format(" select * from baseparameter where type=N'{0}'", type);
+            if (!string.IsNullOrWhiteSpace(code))
+            {
+                sql += string.Format(" and code=N'{0}' ", code);
+            }
+            sql += " order by code ";
+            return this.Query(sql);
+        }
+
+        #endregion
     }
 }

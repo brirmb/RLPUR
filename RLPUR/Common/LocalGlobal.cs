@@ -67,77 +67,31 @@ namespace RLPUR.Common
             return dt; // dt.ToString("yyyyMMdd");
         }
 
-        ///// <summary>
-        ///// 生成新工令号
-        ///// </summary>
-        ///// <returns></returns>
-        //public static string NewOrno(bool isNew)
-        //{
-        //    var dateModel = GetDateModel();
+        /// <summary>
+        /// 获取工件bom数量
+        /// </summary>
+        public static int GetBomQty(string orNo, string bomSeq, string prType)
+        {
+            int qty = 0;
+            using (PurProvider purProvider = new PurProvider())
+            {
+                qty = purProvider.GetBOMQty(orNo, bomSeq, prType);
+            }
+            return qty;
+        }
 
-        //    string no = string.Empty;
-
-        //    using (ContractProvider contProvider = new ContractProvider())
-        //    {
-        //        var ornoSys = contProvider.GetSysOrnoInfo(dateModel.YearStr);
-
-        //        if (ornoSys != null && ornoSys.Rows.Count > 0)
-        //        {
-        //            no = dateModel.YearMonStr + ornoSys.Rows[0]["val2"].ToString();
-        //            if (!isNew)
-        //            {
-        //                var val2 = Convert.ToInt32(ornoSys.Rows[0]["val2"].ToString()) + 1;
-        //                contProvider.UpdateSysOrnoInfo(val2.ToString().PadLeft(3, '0'), dateModel.YearStr);
-        //            }
-        //        }
-        //        else
-        //        {
-        //            no = dateModel.YearMonStr + "001";
-        //            contProvider.InsertSysOrnoInfo(dateModel.YearStr);
-        //        }
-        //    }
-
-        //    return no;
-        //}
-
-        ///// <summary>
-        ///// 生成新发货单号
-        ///// </summary>
-        ///// <returns></returns>
-        //public static string NewSTNo()
-        //{
-        //    var dateModel = GetDateModel();
-
-        //    string no = string.Empty;
-
-        //    using (ContractProvider contProvider = new ContractProvider())
-        //    {
-        //        var param = contProvider.GetBaseParam("ST", "NO");
-
-        //        if (param != null && param.Rows.Count > 0)
-        //        {
-        //            string stno = param.Rows[0]["description"].ToString(); //ST1703997
-        //            string year = stno.Substring(2, 2);
-        //            string num = stno.Substring(4, 5);
-        //            if (dateModel.YearStr == year)
-        //            {
-        //                no = "ST" + year + (Util.ToInt(num) + 1).ToString().PadLeft(5, '0');
-        //            }
-        //            else
-        //            {
-        //                no = "ST" + dateModel.YearStr + (Util.ToInt(num) + 1).ToString().PadLeft(5, '0');
-        //            }
-        //        }
-        //        else
-        //        {
-        //            no = "ST" + dateModel.YearStr + "00001";
-        //        }
-
-        //        contProvider.UpdateBaseParam("ST", "NO", no);
-        //    }
-
-        //    return no;
-        //}
+        /// <summary>
+        /// 获取请购单状态
+        /// </summary>
+        public static string GetPRStatus(string prNo)
+        {
+            string status = string.Empty;
+            using (PurProvider purProvider = new PurProvider())
+            {
+                status = purProvider.GetPRStatus(prNo);
+            }
+            return status;
+        }
 
         #region Excel
         public static void ToExcel(System.Web.UI.Control gv, string name)
