@@ -222,7 +222,7 @@ namespace RLPUR.Web
                 if (rowCheckControl.Checked)
                 {
                     var newRow = table.NewRow();
-                    newRow["prlnedm"] = " ";
+                    newRow["prlnedm"] = "N";
                     newRow["prltno"] = row.Cells[2].Text.Trim();
                     newRow["bomnam"] = row.Cells[3].Text.Trim();
                     newRow["bommat"] = row.Cells[4].Text.Trim();
@@ -359,7 +359,7 @@ namespace RLPUR.Web
 
                         if (rowCheckControl.Checked)
                         {
-                            string isUrgent = urgentCheckControl.Checked ? "Y" : " ";
+                            string isUrgent = urgentCheckControl.Checked ? "Y" : "N";
                             string prlstation = ((TextBox)row.FindControl("prlstation")).Text.Trim();
                             string prQty = ((TextBox)row.FindControl("PRLQTY")).Text.Trim();
                             string prDate = ((TextBox)row.FindControl("PRLPDTE")).Text.Trim();

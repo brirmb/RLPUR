@@ -152,7 +152,7 @@ End Function
 Private Sub GrdPR_BeforeRowColChange(Cancel As Integer)
     If GrdPR.Col >= 0 Then
         Select Case GrdPR.Columns(GrdPR.Col).Name
-            Case "Vendor"
+            Case "Vendor"  //不存在Vendor
                 StrSql = "select sysdata3 from tpursys where sysid='SI' and sysfunc='PROCESS' and syskey='" & GrdPR.Columns("工站").Value & "'"
                 Set recRec = conn.Execute(StrSql)
                 If recRec.EOF Then
@@ -186,7 +186,7 @@ End Sub
 Private Sub GrdPR_Click()
     If GrdPR.Col >= 0 Then
         Select Case GrdPR.Columns(GrdPR.Col).Name
-            Case "Vendor"
+            Case "Vendor"   //不存在Vendor
                 If GrdPR.Columns("工站").Value <> " " Then
                         StrSql = "select sysdata3 from tpursys where sysid='SI' and sysfunc='PROCESS' and syskey='" & GrdPR.Columns("工站").Value & "'"
                         Set recRec = conn.Execute(StrSql)

@@ -1,5 +1,6 @@
 
 //txtPRNO请购单号 TextSoNO工令号 TxtMpNO图号 TxtPRType请购类型 txtStatus状态 Check1按重量结算复选框
+//表格最后四列 单价|厂商代码|厂商名称|币别|状态（前三列可填写，最后列只显示）
 
 //工具栏
 Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
@@ -125,7 +126,7 @@ End Sub
 Private Sub GrdPR_Click()
     If GrdPR.Col >= 0 Then
         Select Case GrdPR.Columns(GrdPR.Col).Name
-            Case "Vendor"
+            Case "Vendor"  //不存在Vendor栏位 表purpacn无
                 GrdPR.Columns("Vendor").RemoveAll
                 If txtType.Text = "N" Then
                     StrSql = "select distinct pacvend from purpacn where pacid='PA' and pacprod='" & GrdPR.Columns("Item No").Value & "' and to_char(sysdate,'YYYYMMDD') between pacdeff and pacddis"
