@@ -375,7 +375,7 @@ namespace RLPUR.Web
                     if (PRNo.Text.Trim().Length > 0)
                     {
                         //更新状态
-                        cmd.CommandText = purProvider.UpdatePRStatusSql(prNo);
+                        cmd.CommandText = purProvider.UpdatePRStatusSql(prNo, "UP");
                         cmd.ExecuteNonQuery();
                     }
                 }

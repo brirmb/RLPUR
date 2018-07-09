@@ -31,6 +31,15 @@ namespace RLPUR.Web {
         protected global::System.Web.UI.WebControls.Label PageTitle;
         
         /// <summary>
+        /// PRNo 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox PRNo;
+        
+        /// <summary>
         /// ORDNO 控件。
         /// </summary>
         /// <remarks>
@@ -38,6 +47,24 @@ namespace RLPUR.Web {
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
         protected global::System.Web.UI.WebControls.TextBox ORDNO;
+        
+        /// <summary>
+        /// PRStatus 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox PRStatus;
+        
+        /// <summary>
+        /// PRType 控件。
+        /// </summary>
+        /// <remarks>
+        /// 自动生成的字段。
+        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox PRType;
         
         /// <summary>
         /// DRAWNO 控件。
@@ -49,40 +76,13 @@ namespace RLPUR.Web {
         protected global::System.Web.UI.WebControls.TextBox DRAWNO;
         
         /// <summary>
-        /// CheckBox1 控件。
+        /// IsWeight 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox CheckBox1;
-        
-        /// <summary>
-        /// TextBox1 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox TextBox1;
-        
-        /// <summary>
-        /// PRNo 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox PRNo;
-        
-        /// <summary>
-        /// PRStatus 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox PRStatus;
+        protected global::System.Web.UI.WebControls.CheckBox IsWeight;
         
         /// <summary>
         /// OKButton 控件。

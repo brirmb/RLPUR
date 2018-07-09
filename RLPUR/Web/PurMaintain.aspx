@@ -15,10 +15,27 @@
             </div>
             <div class="Operating">
                 <ul>
+                    <li class="Caption">请购单号
+                    </li>
+                    <li class="Content">
+                        <asp:TextBox ID="PRNo" runat="server"></asp:TextBox>
+                    </li>
                     <li class="Caption">工令号
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="ORDNO" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="ORDNO" runat="server" Enabled="False"></asp:TextBox>
+                    </li>
+
+                    <li class="CaptionSmall">状态
+                    </li>
+                    <li class="ContentSmall">
+                        <asp:TextBox ID="PRStatus" runat="server" Enabled="False"></asp:TextBox>
+                    </li>
+                    <li class="LineFeed"></li>
+                    <li class="Caption">请购类型
+                    </li>
+                    <li class="Content">
+                        <asp:TextBox ID="PRType" runat="server" Enabled="False"></asp:TextBox>
                     </li>
                     <li class="Caption">图号
                     </li>
@@ -26,23 +43,7 @@
                         <asp:TextBox ID="DRAWNO" runat="server" Enabled="False"></asp:TextBox>
                     </li>
                     <li class="ContentSmall">
-                        <asp:CheckBox ID="CheckBox1" runat="server" Text="按重量结算" ForeColor="Red" />
-                    </li>
-                    <li class="LineFeed"></li>
-                    <li class="Caption">请购类型
-                    </li>
-                    <li class="Content">
-                        <asp:TextBox ID="TextBox1" runat="server" Enabled="False"></asp:TextBox>
-                    </li>
-                    <li class="Caption">请购单号
-                    </li>
-                    <li class="Content">
-                        <asp:TextBox ID="PRNo" runat="server"></asp:TextBox>
-                    </li>
-                    <li class="CaptionSmall">状态
-                    </li>
-                    <li class="ContentSmall">
-                        <asp:TextBox ID="PRStatus" runat="server" Enabled="False"></asp:TextBox>
+                        <asp:CheckBox ID="IsWeight" runat="server" Text="按重量结算" ForeColor="Red" />
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Button">
@@ -98,19 +99,25 @@
                         <asp:BoundField DataField="PRLPDTE" HeaderText="需求日期" />
                         <asp:TemplateField HeaderText="单价">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlstation" runat="server" Text='<%# Eval("prlstation").ToString().Trim() %>' Width="90%" CssClass=""></asp:TextBox>
+                                <asp:TextBox ID="prlpacst" runat="server" Text='<%# Eval("prlpacst").ToString().Trim() %>' Width="90%" CssClass=""></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商代码">
                             <ItemTemplate>
-                                <asp:TextBox ID="PRLQTY" runat="server" Text='<%# Eval("PRLQTY").ToString().Trim() %>' Width="90%" CssClass="Required Integer"></asp:TextBox>
+                                <asp:TextBox ID="prlvnd" runat="server" Text='<%# Eval("prlvnd").ToString().Trim() %>' Width="90%" CssClass="Required Integer"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商名称">
                             <ItemTemplate>
-                                <asp:TextBox ID="PRLPDTE" runat="server" Text='<%# Eval("PRLPDTE").ToString().Trim() %>' Width="90%" CssClass="Required Date"></asp:TextBox>
+                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required Date"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
+                         <asp:TemplateField HeaderText="币别">
+                            <ItemTemplate>
+                                <asp:TextBox ID="prlcur" runat="server" Text='<%# Eval("prlcur").ToString().Trim() %>' Width="90%" CssClass=""></asp:TextBox>
+                            </ItemTemplate>
+                        </asp:TemplateField>
+                        <asp:BoundField DataField="" HeaderText="状态" />
                     </Columns>
                 </asp:GridView>
             </div>

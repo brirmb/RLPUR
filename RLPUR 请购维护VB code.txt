@@ -1,6 +1,6 @@
 
 //txtPRNO请购单号 TextSoNO工令号 TxtMpNO图号 TxtPRType请购类型 txtStatus状态 Check1按重量结算复选框
-//表格最后四列 单价|厂商代码|厂商名称|币别|状态（前三列可填写，最后列只显示）
+//表格最后四列 单价|厂商代码|厂商名称|币别|状态（前四列可填写，最后列只显示）
 
 //工具栏
 Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)

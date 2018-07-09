@@ -363,7 +363,7 @@ namespace RLPUR.Web
                             string prDate = ((TextBox)row.FindControl("PRLPDTE")).Text.Trim();
                             prDate = LocalGlobal.ConvertDateFormat(prDate).ToString("yyyyMMdd");
 
-                            cmd.CommandText = purProvider.InsertPRDetailSql(prNo, seq.ToString(), "RL", prQty, prDate, "0", "RL", ORDNO.Text.Trim(), DRAWNO.Text, row.Cells[3].Text.Trim()," ", row.Cells[6].Text.Trim(), isUrgent, row.Cells[9].Text.Trim(), LocalGlobal.CurrentUserID, dateModel.DateStr, dateModel.TimeStr, "一般请购", row.Cells[7].Text.Trim());
+                            cmd.CommandText = purProvider.InsertPRDetailSql(prNo, seq.ToString(), "RL", prQty, prDate, "0", "RL", ORDNO.Text.Trim(), DRAWNO.Text, row.Cells[3].Text.Trim(), " ", row.Cells[6].Text.Trim(), isUrgent, row.Cells[9].Text.Trim(), LocalGlobal.CurrentUserID, dateModel.DateStr, dateModel.TimeStr, "一般请购", row.Cells[7].Text.Trim());
                             cmd.ExecuteNonQuery();
                         }
                     }
@@ -373,7 +373,7 @@ namespace RLPUR.Web
                     if (PRNo.Text.Trim().Length > 0)
                     {
                         //更新状态
-                        cmd.CommandText = purProvider.UpdatePRStatusSql(prNo);
+                        cmd.CommandText = purProvider.UpdatePRStatusSql(prNo, "UP");
                         cmd.ExecuteNonQuery();
                     }
                 }

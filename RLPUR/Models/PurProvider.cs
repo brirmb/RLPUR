@@ -37,6 +37,26 @@ namespace RLPUR.Models
         }
 
         /// <summary>
+        /// 获取请购维护列表-材料请购
+        /// </summary>
+        public DataTable GetPRDetailMat(string prNo)
+        {
+            string sql = string.Format("select * from purprl where prlno=N'{0}' order by prlseq ", prNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购维护列表-非材料请购
+        /// </summary>
+        public DataTable GetPRDetailNotMat(string prNo)
+        {
+            string sql = string.Format("select PURPRL.*,bommat,bomspc,bomqua,bomnam from PURPRL,tsfcbom where bomflg='Y' and bomwno=prlsord and bomseq=prlsoseq and PRLID='RL' and PRLNO=N'{0}' and PRLAPR<>'Y' and prlpmt<>'Y' and PRLPONO=0 order by prlno,prlseq ", prNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
         /// 获取请购单号 prType:N一般请购,F委外请购
         /// </summary>
         public DataTable GetPRNoList(string prType)
@@ -148,9 +168,9 @@ namespace RLPUR.Models
         /// <summary>
         /// 修改请购头表状态为更新 Sql
         /// </summary>
-        public string UpdatePRStatusSql(string prNo)
+        public string UpdatePRStatusSql(string prNo, string status)
         {
-            string sql = string.Format("update PURPRH set PRHSTAT ='UP' where PRHNO=N'{0}' ", prNo);
+            string sql = string.Format("update PURPRH set PRHSTAT =N'{1}' where PRHNO=N'{0}' ", prNo, status);
 
             return sql;
         }
