@@ -57,11 +57,41 @@ namespace RLPUR.Models
         }
 
         /// <summary>
+        /// 获取请购维护打印信息-非材料请购
+        /// </summary>
+        public DataTable GetPRPrintNotMat(string prNo)
+        {
+            string sql = string.Format("select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlmno,prlum,prlstation,bommat,bomnam from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq and prhno= N'{0}' and prhid='RH' and prlid='RL' and prlpmt='Y' ", prNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购维护打印信息-材料请购
+        /// </summary>
+        public DataTable GetPRPrintMat(string prNo)
+        {
+            string sql = string.Format("select prlno,prlseq,prlqty,prlpacst,prlpdte,prlvndm,prltno,prlum,prlmrk,prloutno,prlpicno ,prhno from purprl,purprh where prhid='RH' and prlno=prhno and prhtyp='S' and prlno= N'{0}' ", prNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
         /// 获取请购单号 prType:N一般请购,F委外请购
         /// </summary>
         public DataTable GetPRNoList(string prType)
         {
             string sql = string.Format("select distinct PRLNO from PURPRL,purprh where prhid='RH' and prhno=prlno and prhtyp=N'{0}' and prhstat in('NE','UP','PS') and PRLID='RL' and PRLPONO=0 order by PRLNO ", prType);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购明细中的供应商
+        /// </summary>
+        public DataTable GetPRVendorList(string prNo)
+        {
+            string sql = string.Format("select distinct prlvndm from purprl where prlno=N'{0}' ", prNo);
 
             return this.Query(sql);
         }
@@ -171,6 +201,26 @@ namespace RLPUR.Models
         public string UpdatePRStatusSql(string prNo, string status)
         {
             string sql = string.Format("update PURPRH set PRHSTAT =N'{1}' where PRHNO=N'{0}' ", prNo, status);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 请购维护明细更新 Sql
+        /// </summary>
+        public string UpdatePRDetailSql(string prNo, string prlseq, string price, string vendorNo, string vendorName, string curr, string isWeight, string prlrdte)
+        {
+            string sql = string.Format("update purprl set prlpacst=N'{2}',prlvnd=N'{3}',prlvndm=N'{4}',prlcur=N'{5}',prlwhs=N'{6}',prlrdte=N'{7}' where prlno=N'{0}' and prlseq=N'{1}' ", prNo, prlseq, price, vendorNo, vendorName, curr, isWeight);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 请购维护明细提交 Sql
+        /// </summary>
+        public string PostPRDetailSql(string prNo, string prlseq)
+        {
+            string sql = string.Format("update PURPRL set PRLPMT ='Y',PRLAPR = 'Y' where prlno=N'{0}' and prlseq=N'{1}' ", prNo, prlseq);
 
             return sql;
         }
