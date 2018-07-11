@@ -77,43 +77,32 @@ namespace RLPUR.Web
         {
             using (PurProvider purProvider = new PurProvider())
             {
-                //if (PRNo.Text.Trim().Length <= 0)
-                //{
-                //    DataTable bomTable = purProvider.GetBOMList(ORDNO.Text.Trim(), this.BomType.SelectedValue.Trim());
-                //    List.DataSource = bomTable;
-                //    List.DataBind();
-                //    if (bomTable != null && bomTable.Rows.Count > 0)
-                //    {
-                //        DRAWNO.Text = bomTable.Rows[0]["bommno"].ToString();
-                //    }
+                string prNo = PRNo.Text.Trim();
 
-                //    ViewState["ViewDT"] = this.CreateTable();
-                //    BindTempData();
-                //}
-                //else
-                //{
-                //    List.DataSource = null;
-                //    List.DataBind();
+                var pur = purProvider.GetPRDetail(prNo);
+                if (pur != null)
+                {
+                    ORDNO.Text = pur["PRHSORD"].ToString();
+                    DRAWNO.Text = pur["PRHMNO"].ToString();
+                    PRType.Text = pur["prhpgm"].ToString();
+                    PRStatus.Text = pur["PRHSTAT"].ToString();
 
-                //    DataTable prTable = purProvider.GetPRDetailList(PRNo.Text.Trim());
-                //    ViewState["ViewDT"] = prTable;
-                //    BindTempData();
-                //    //PRList.DataSource = prTable;
-                //    //PRList.DataBind();
-                //    if (prTable != null && prTable.Rows.Count > 0)
-                //    {
-                //        ORDNO.Text = prTable.Rows[0]["PRHSORD"].ToString();
-                //        DRAWNO.Text = prTable.Rows[0]["prhmno"].ToString();
-                //        PRStatus.Text = prTable.Rows[0]["PRHSTAT"].ToString();
+                    DataTable table;
+                    if (ORDNO.Text.Trim().Length > 0) //非材料请购
+                    {
+                        table = purProvider.GetPRDetailNotMat(prNo);
+                    }
+                    else  //材料请购
+                    {
+                        table = purProvider.GetPRDetailMat(prNo);
+                    }
 
-                //        //默认全部勾选
-                //        for (int i = 0; i < PRList.Rows.Count; i++)
-                //        {
-                //            HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)PRList.Rows[i].FindControl("RowCheck");
-                //            rowCheckControl.Checked = true;
-                //        }
-                //    }
-                //}
+                    List.DataSource = table;
+                    List.DataBind();
+
+                    PostButton.Enabled = true;
+                }
+
             }
         }
 

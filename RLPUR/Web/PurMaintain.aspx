@@ -91,9 +91,9 @@
                         </asp:TemplateField>
                         <%--<asp:BoundField DataField="prlseq" HeaderText="序号" />--%>
                         <asp:BoundField DataField="prltno" HeaderText="工件号" />
-                        <asp:BoundField DataField="bomnam" HeaderText="工件名称" />
-                        <asp:BoundField DataField="bommat" HeaderText="材质" />
-                        <asp:BoundField DataField="prlstation" HeaderText="工站" />
+                        <asp:BoundField DataField="" HeaderText="工件名称" />
+                        <asp:BoundField DataField="" HeaderText="材质" />
+                        <asp:BoundField DataField="" HeaderText="工站" />
                         <asp:BoundField DataField="prlum" HeaderText="单位" />
                         <asp:BoundField DataField="PRLQTY" HeaderText="请购数量" />
                         <asp:BoundField DataField="PRLPDTE" HeaderText="需求日期" />
@@ -112,7 +112,7 @@
                                 <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required Date"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
-                         <asp:TemplateField HeaderText="币别">
+                        <asp:TemplateField HeaderText="币别">
                             <ItemTemplate>
                                 <asp:TextBox ID="prlcur" runat="server" Text='<%# Eval("prlcur").ToString().Trim() %>' Width="90%" CssClass=""></asp:TextBox>
                             </ItemTemplate>
