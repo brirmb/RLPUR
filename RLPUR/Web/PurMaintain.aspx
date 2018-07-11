@@ -73,7 +73,7 @@
                                 <input type="checkbox" id="RowCheckAll" runat="server" class="CheckAll" title="<%$ Resources:iiWeb, DeleteButton %>" />
                             </HeaderTemplate>--%>
                             <ItemTemplate>
-                                <input type="checkbox" id="UrgentCheck" runat="server" class="Check" title="急件" />
+                                <input type="checkbox" id="UrgentCheck" runat="server" class="Check" title="急件" disabled="disabled" />
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField>
@@ -91,15 +91,15 @@
                         </asp:TemplateField>
                         <%--<asp:BoundField DataField="prlseq" HeaderText="序号" />--%>
                         <asp:BoundField DataField="prltno" HeaderText="工件号" />
-                        <asp:BoundField DataField="" HeaderText="工件名称" />
-                        <asp:BoundField DataField="" HeaderText="材质" />
-                        <asp:BoundField DataField="" HeaderText="工站" />
+                        <asp:BoundField DataField="bomnam" HeaderText="工件名称" />
+                        <asp:BoundField DataField="bommat" HeaderText="材质" />
+                        <asp:BoundField DataField="prlstation" HeaderText="工站" />
                         <asp:BoundField DataField="prlum" HeaderText="单位" />
                         <asp:BoundField DataField="PRLQTY" HeaderText="请购数量" />
                         <asp:BoundField DataField="PRLPDTE" HeaderText="需求日期" />
                         <asp:TemplateField HeaderText="单价">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlpacst" runat="server" Text='<%# Eval("prlpacst").ToString().Trim() %>' Width="90%" CssClass=""></asp:TextBox>
+                                <asp:TextBox ID="prlpacst" runat="server" Text='<%# Eval("prlpacst").ToString().Trim() %>' Width="90%" CssClass="Required Float"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商代码">
@@ -109,7 +109,7 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商名称">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required Date"></asp:TextBox>
+                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="币别">

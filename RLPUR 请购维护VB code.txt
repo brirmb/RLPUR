@@ -68,15 +68,6 @@ Private Function Inquiry()
         If Not recRec.EOF Then
             GrdPR.RemoveAll
             While Not recRec.EOF
-                If recRec.Fields("PRLPMT").Value = "Y" And recRec.Fields("PRLAPR").Value = "N" Then
-                    strStats = "WA"
-                ElseIf recRec.Fields("PRLPMT").Value = "Y" And recRec.Fields("PRLAPR").Value = "R" Then
-                    strStats = "RJ"
-                ElseIf recRec.Fields("PRLPMT").Value = "N" Then
-                    strStats = "MT"
-                ElseIf recRec.Fields("PRLAPR").Value = "Y" Then
-                    strStats = "CL"
-                End If
                 GrdPR.AddItem IIf(recRec.Fields("prlnedm").Value = "Y", True, False) & vbTab & True & vbTab _
                         & recRec.Fields("PRLSEQ").Value & vbTab & recRec.Fields("prltno").Value _
                         & vbTab & recRec.Fields("bomnam").Value & vbTab & recRec.Fields("bommat").Value _

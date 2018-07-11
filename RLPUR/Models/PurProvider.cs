@@ -41,7 +41,7 @@ namespace RLPUR.Models
         /// </summary>
         public DataTable GetPRDetailMat(string prNo)
         {
-            string sql = string.Format("select * from purprl where prlno=N'{0}' order by prlseq ", prNo);
+            string sql = string.Format("select *,prloutno bomnam,prlpicno bommat,'' prlstation from purprl where prlno=N'{0}' order by prlseq ", prNo);
 
             return this.Query(sql);
         }

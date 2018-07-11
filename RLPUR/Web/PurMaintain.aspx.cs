@@ -58,7 +58,10 @@ namespace RLPUR.Web
             this.DRAWNO.Text = string.Empty;
             this.PRNo.Text = string.Empty;
             this.PRStatus.Text = string.Empty;
-            //this.BomType.SelectedIndex = -1;
+            this.PRType.Text = string.Empty;
+            this.IsWeight.Checked = false;
+
+            this.PostButton.Enabled = false;
 
             #endregion
 
@@ -102,6 +105,11 @@ namespace RLPUR.Web
 
                     PostButton.Enabled = true;
                 }
+                else
+                {
+                    List.DataSource = null;
+                    List.DataBind();
+                }
 
             }
         }
@@ -117,14 +125,19 @@ namespace RLPUR.Web
                 case DataControlRowType.DataRow:
                     #region 数据绑定
 
-                    ////数据
-                    //string rowStatus = ((DataRowView)e.Row.DataItem)["Status"].ToString().Trim();
+                    //状态
+                    string price = ((DataRowView)e.Row.DataItem)["prlpacst"].ToString().Trim();
+                    string prlvnd = ((DataRowView)e.Row.DataItem)["prlvnd"].ToString().Trim();
+                    string prlvndm = ((DataRowView)e.Row.DataItem)["prlvndm"].ToString().Trim();
 
-                    ////控件
-                    //HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)e.Row.FindControl("RowCheck");
+                    e.Row.Cells[14].Text = (Util.ToDecimal(price) > 0 && Util.ToInt(prlvnd) > 0 && prlvndm.Length > 0) ? "OK" : "";
 
-                    ////指派
-                    //rowCheckControl.Disabled = (rowStatus == "S");
+                    //是否急件
+                    string isUrgent = ((DataRowView)e.Row.DataItem)["prlnedm"].ToString().Trim();
+                    //控件
+                    HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)e.Row.FindControl("UrgentCheck");
+                    //指派
+                    rowCheckControl.Checked = (isUrgent == "Y");
 
                     #endregion
                     break;
@@ -162,7 +175,79 @@ namespace RLPUR.Web
 
         protected void SaveButton_Click(object sender, EventArgs e)
         {
+            #region 检测
 
+            if (PRNo.Text.Trim().Length <= 0)
+            {
+                this.ShowWarningMessage("请购单号不存在");
+                return;
+            }
+
+            int count = 0;
+            foreach (GridViewRow row in List.Rows)
+            {
+                HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
+                if (rowCheckControl.Checked)
+                {
+                    count++;
+                }
+            }
+
+            if (count <= 0)
+            {
+                this.ShowInfoMessage(this.GetGlobalResourceString("NotSelectMessage"));
+                return;
+            }
+
+            #endregion
+
+            SqlConnection con = LocalGlobal.DbConnect();
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();//使用事务
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.Transaction = tran;
+
+            var dateModel = LocalGlobal.GetDateModel();
+
+            using (PurProvider purProvider = new PurProvider())
+            {
+                try
+                {
+                    foreach (GridViewRow row in List.Rows)
+                    {
+                        HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
+                        if (rowCheckControl.Checked)
+                        {
+                            string seq = row.Cells[2].ToString().Trim();
+                            string price = ((TextBox)row.FindControl("prlpacst")).Text.Trim();
+                            string vendorNo = ((TextBox)row.FindControl("prlvnd")).Text.Trim();
+                            string vendorName = ((TextBox)row.FindControl("prlvndm")).Text.Trim();
+                            string curr = ((TextBox)row.FindControl("prlcur")).Text.Trim();
+                            string isWeight = IsWeight.Checked ? "Y" : "";
+
+                            cmd.CommandText = purProvider.UpdatePRDetailSql(PRNo.Text.Trim(), seq.ToString(), price, vendorNo, vendorName, curr, isWeight, dateModel.DateStr);
+                            cmd.ExecuteNonQuery();
+                        }
+                    }
+
+                    //更新状态
+                    cmd.CommandText = purProvider.UpdatePRStatusSql(PRNo.Text.Trim(), "UP");
+                    cmd.ExecuteNonQuery();
+
+                }
+                catch (Exception error)
+                {
+                    tran.Rollback();
+                    this.ShowErrorMessage("保存失败。" + error.Message);
+                    return;
+                }
+
+                tran.Commit();
+
+                this.BindList();
+                this.PostButton.Enabled = true;
+            }
         }
 
         protected void PostButton_Click(object sender, EventArgs e)
