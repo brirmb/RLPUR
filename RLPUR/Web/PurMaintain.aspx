@@ -104,17 +104,17 @@
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商代码">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlvnd" runat="server" Text='<%# Eval("prlvnd").ToString().Trim() %>' Width="90%" CssClass="Required Integer"></asp:TextBox>
+                                <asp:TextBox ID="prlvnd" runat="server" Text='<%# Eval("prlvnd").ToString().Trim() %>' Width="90%" CssClass="Required Integer venno"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商名称">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required"></asp:TextBox>
+                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required venname"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="币别">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlcur" runat="server" Text='<%# Eval("prlcur").ToString().Trim() %>' Width="90%" CssClass=""></asp:TextBox>
+                                <asp:TextBox ID="prlcur" runat="server" Text='<%# Eval("prlcur").ToString().Trim() %>' Width="90%" CssClass="vencurr"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:BoundField DataField="" HeaderText="状态" />

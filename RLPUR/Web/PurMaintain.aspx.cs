@@ -183,22 +183,6 @@ namespace RLPUR.Web
                 return;
             }
 
-            int count = 0;
-            foreach (GridViewRow row in List.Rows)
-            {
-                HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
-                if (rowCheckControl.Checked)
-                {
-                    count++;
-                }
-            }
-
-            if (count <= 0)
-            {
-                this.ShowInfoMessage(this.GetGlobalResourceString("NotSelectMessage"));
-                return;
-            }
-
             #endregion
 
             SqlConnection con = LocalGlobal.DbConnect();
@@ -214,6 +198,7 @@ namespace RLPUR.Web
             {
                 try
                 {
+                    bool flag = false;
                     foreach (GridViewRow row in List.Rows)
                     {
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
@@ -228,12 +213,23 @@ namespace RLPUR.Web
 
                             cmd.CommandText = purProvider.UpdatePRDetailSql(PRNo.Text.Trim(), seq.ToString(), price, vendorNo, vendorName, curr, isWeight, dateModel.DateStr);
                             cmd.ExecuteNonQuery();
+
+                            flag = true;
                         }
                     }
 
-                    //更新状态
-                    cmd.CommandText = purProvider.UpdatePRStatusSql(PRNo.Text.Trim(), "UP");
-                    cmd.ExecuteNonQuery();
+                    if (flag)
+                    {
+                        //更新状态
+                        cmd.CommandText = purProvider.UpdatePRStatusSql(PRNo.Text.Trim(), "UP");
+                        cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        this.ShowInfoMessage(this.GetGlobalResourceString("NotSelectMessage"));
+                        tran.Rollback();
+                        return;
+                    }
 
                 }
                 catch (Exception error)
@@ -250,13 +246,112 @@ namespace RLPUR.Web
             }
         }
 
+        /// <summary>
+        /// 提交
+        /// </summary>
         protected void PostButton_Click(object sender, EventArgs e)
         {
+            #region 检测
 
+            if (PRNo.Text.Trim().Length <= 0)
+            {
+                this.ShowWarningMessage("请购单号不存在");
+                return;
+            }
+
+            #endregion
+
+            SqlConnection con = LocalGlobal.DbConnect();
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();//使用事务
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.Transaction = tran;
+
+            using (PurProvider purProvider = new PurProvider())
+            {
+                try
+                {
+                    bool flag = false;
+                    foreach (GridViewRow row in List.Rows)
+                    {
+                        HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
+                        if (rowCheckControl.Checked)
+                        {
+                            string seq = row.Cells[2].ToString().Trim();
+                            string status = row.Cells[14].Text.Trim();
+
+                            if (status == "OK")
+                            {
+                                cmd.CommandText = purProvider.PostPRDetailSql(PRNo.Text.Trim(), seq.ToString());
+                                cmd.ExecuteNonQuery();
+
+                                flag = true;
+                            }
+                        }
+                    }
+
+                    if (flag)
+                    {
+                        //更新状态
+                        cmd.CommandText = purProvider.UpdatePRStatusSql(PRNo.Text.Trim(), "PS");
+                        cmd.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        this.ShowInfoMessage("未选中要提交的记录，请确认请购状态，或未填写价格/厂商！");
+                        tran.Rollback();
+                        return;
+                    }
+
+                }
+                catch (Exception error)
+                {
+                    tran.Rollback();
+                    this.ShowErrorMessage("提交失败。" + error.Message);
+                    return;
+                }
+
+                tran.Commit();
+
+                this.BindList();
+            }
         }
 
+        /// <summary>
+        /// 打印
+        /// </summary>
         protected void PrintButton_Click(object sender, EventArgs e)
         {
+            #region 检测
+
+            if (PRNo.Text.Trim().Length <= 0)
+            {
+                this.ShowWarningMessage("请输入请购单号！");
+                return;
+            }
+
+            #endregion
+
+            using (PurProvider purProvider = new PurProvider())
+            {
+                string prNo = PRNo.Text.Trim();
+                var pur = purProvider.GetPRDetail(prNo);
+                if (pur == null)
+                {
+                    this.ShowWarningMessage("请购单号码有误！");
+                    return;
+                }
+
+                DataTable table = new DataTable();
+                //一般请购、委外请购数据源
+                table = purProvider.GetPRPrintNotMat(prNo);
+
+
+                //材料请购数据源
+                table = purProvider.GetPRPrintMat(prNo);
+
+            }
 
         }
 

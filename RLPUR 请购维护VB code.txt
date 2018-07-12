@@ -263,17 +263,17 @@ Private Function PrtPR()
     CsrPR.Formulas(0) = "fmu_vend='" & Trim(rsName.Fields(0).Value) & "'"
     CsrPR.Formulas(1) = "fmu_date='" & GetDate() & "'"
     
-    If recRec.Fields(0).Value = "N" Then
+    If recRec.Fields(0).Value = "N" Then  //一般请购
         CsrPR.ReportFileName = App.Path & "\TPUR_PR_N.RPT"
         StrSql = "select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlmno,prlum,bommat,bomnam " _
             & "from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq " _
             & "and prhno=" & Trim(txtPRNO) & " and prhid='RH' and prlid='RL' and prlpmt='Y'"
-    ElseIf recRec.Fields(0).Value = "F" Then
+    ElseIf recRec.Fields(0).Value = "F" Then  //委外请购
         CsrPR.ReportFileName = App.Path & "\TPUR_PR_F.RPT"
         StrSql = "select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlmno,prlstation,prlum,bomnam " _
             & "from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq " _
             & "and prhno=" & Trim(txtPRNO) & " and prhid='RH' and prlid='RL' and prlpmt='Y'"
-    ElseIf recRec.Fields(0).Value = "S" Then
+    ElseIf recRec.Fields(0).Value = "S" Then  //材料请购
         CsrPR.ReportFileName = App.Path & "\TPUR_PR_S.RPT"
         StrSql = "select prlno,prlseq,prlqty,prlpacst,prlpdte,prlvndm,prltno,prlum,prlmrk,prloutno,prlpicno" _
             & ",prhno from purprl,purprh where prhid='RH' and prlno=prhno and prhtyp='S' and prlno=" & Trim(txtPRNO)

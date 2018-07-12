@@ -258,7 +258,7 @@ namespace RLPUR.Models
 
         #endregion
 
-        #region 配置
+        #region 基础 配置
 
         /// <summary>
         /// 查询基础配置 UM单位 交易条件TC 币别CY 区域AR 付款方式PY 业务员CK 税率TX 工件类型PT
@@ -272,6 +272,24 @@ namespace RLPUR.Models
             }
             sql += " order by code ";
             return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 查询请购明细（状态等）
+        /// </summary>
+        public DataRow GetVendor(string venNo)
+        {
+            string sql = string.Format(" select avnam,avcur from puravm where avid='A' and avend=N'{0}' ", venNo);
+
+            var table = this.Query(sql);
+            if (table != null && table.Rows.Count == 1)
+            {
+                return table.Rows[0];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         #endregion
