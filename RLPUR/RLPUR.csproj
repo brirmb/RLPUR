@@ -106,6 +106,8 @@
     <Content Include="Default.aspx" />
     <Content Include="Framework\AuthorityDetail.aspx" />
     <Content Include="Web\CommonPur.aspx" />
+    <Content Include="Web\MaterialPur.aspx" />
+    <EmbeddedResource Include="Web\MaterialPur.aspx.js" />
     <Content Include="Web\OutsidePur.aspx" />
     <Content Include="Web\PurMaintain.aspx" />
     <EmbeddedResource Include="Web\PurMaintain.aspx.js" />
@@ -279,6 +281,13 @@
     </Compile>
     <Compile Include="Web\GetVendor.ashx.cs">
       <DependentUpon>GetVendor.ashx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\MaterialPur.aspx.cs">
+      <DependentUpon>MaterialPur.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\MaterialPur.aspx.designer.cs">
+      <DependentUpon>MaterialPur.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web\OutsidePur.aspx.cs">
       <DependentUpon>OutsidePur.aspx</DependentUpon>
