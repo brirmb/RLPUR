@@ -32,6 +32,7 @@ Private Function Inquiry()
     End If
 End Function
 
+//新增临时数据
 Private Sub CmdAdd_Click()
     If Trim(TxtPN) = "" Then
         MsgBox "请输入料号！", , "提示"
@@ -66,17 +67,19 @@ Private Sub CmdAdd_Click()
     Call ReFreshGrd(GrdPR)
 End Sub
 
+//表格删除临时行
 Private Sub CmdDelete_Click()
     GrdPR.DeleteSelected
     Call ReFreshGrd(GrdPR)
 End Sub
 
+//保存
 Private Function SaveData()
     If GrdPR.Rows = 0 Then
         Exit Function
     End If
     conn.BeginTrans
-    If Trim(cmbPRNO) <> "" Then
+    If Trim(cmbPRNO) <> "" Then  //编辑
         StrSql = "delete from purprl where prlno=" & Trim(cmbPRNO)
         conn.Execute StrSql
         GrdPR.MoveFirst
@@ -94,7 +97,7 @@ Private Function SaveData()
         StrSql = "update purprh set prhstat='UP' where prhno=" & Trim(cmbPRNO)
         conn.Execute StrSql
         txtStats.Text = "UP"
-    Else
+    Else   //新增
         StrSql = "select max(prhno) prno from purprh"
         Set recRec = conn.Execute(StrSql)
         If Not recRec.EOF Then
@@ -124,6 +127,7 @@ Private Function SaveData()
     conn.CommitTrans
 End Function
 
+//删除材料请购单
 Private Function DelData()
     If Trim(cmbPRNO) <> "" Then
         If MsgBox("确定要删除该请购单吗?", vbYesNo, "提示") = vbYes Then
