@@ -1,6 +1,7 @@
 
 //TxtShIP出货单号  TxtSONO工令号 TxtRDate合同需求日期 DTPicker1出货日期
 
+//根据出货单号查询
 Private Sub TxtShIP_Change()
     GrdSHIP.RemoveAll
     StrSql = "select * from shiping,contract where shipno='" & Trim(TxtShIP) & "' and left(shipsono,7)=ordno "

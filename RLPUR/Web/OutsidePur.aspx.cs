@@ -347,18 +347,18 @@ namespace RLPUR.Web
 
                     #region Insert
 
-                    cmd.CommandText = purProvider.InsertPRSql(prNo, ORDNO.Text.Trim(), DRAWNO.Text, "F", "委外请购", LocalGlobal.CurrentUserID, dateModel.DateStr);
+                    cmd.CommandText = purProvider.InsertPRSql(prNo, ORDNO.Text.Trim(), DRAWNO.Text, "F", " ", "委外请购", LocalGlobal.CurrentUserID, dateModel.DateStr, LocalGlobal.CurrentUserID, dateModel.DateStr);
                     cmd.ExecuteNonQuery();
 
                     int seq = 0;
                     foreach (GridViewRow row in PRList.Rows)
                     {
-                        seq++;
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                         HtmlInputCheckBox urgentCheckControl = (HtmlInputCheckBox)row.FindControl("UrgentCheck");
 
                         if (rowCheckControl.Checked)
                         {
+                            seq++;
                             string isUrgent = urgentCheckControl.Checked ? "Y" : "N";
                             string prlstation = ((TextBox)row.FindControl("prlstation")).Text.Trim();
                             string prQty = ((TextBox)row.FindControl("PRLQTY")).Text.Trim();

@@ -8,6 +8,7 @@ using System.Web.UI.HtmlControls;
 using System.Web.UI.WebControls;
 using RLPUR.Common;
 using RLPUR.Models;
+using System.Data.SqlClient;
 
 namespace RLPUR.Web
 {
@@ -72,7 +73,7 @@ namespace RLPUR.Web
             using (PurProvider purProvider = new PurProvider())
             {
                 string prNo = PRNo.Text.Trim();
-                DataTable table = purProvider.GetPRDetailMat(prNo);
+                DataTable table = purProvider.GetMatPRDetailList(prNo);
 
                 List.DataSource = table;
                 List.DataBind();
@@ -126,19 +127,17 @@ namespace RLPUR.Web
         /// </summary>
         protected void CreateRow_Click(object sender, EventArgs e)
         {
-            //#region 检测
-            //var itemName = ((TextBox)this.List.FooterRow.FindControl("ITEMNO")).Text.Trim();
-            //#endregion
-
             var table = ViewState["ViewDT"] as DataTable;
             var newRow = table.NewRow();
-            newRow["ITEMNO"] = ((TextBox)this.List.FooterRow.FindControl("ITEMNO")).Text.Trim();
-            newRow["DRAWNO"] = ((TextBox)this.List.FooterRow.FindControl("DRAWNO")).Text.Trim();
-            newRow["ORDQTY"] = ((TextBox)this.List.FooterRow.FindControl("ORDQTY")).Text.Trim();
-            newRow["UM"] = ((DropDownList)this.List.FooterRow.FindControl("UM")).SelectedValue.Trim();
-            newRow["UNITPRICE"] = ((TextBox)this.List.FooterRow.FindControl("UNITPRICE")).Text.Trim();
-            newRow["AMT"] = ((TextBox)this.List.FooterRow.FindControl("AMT")).Text.Trim();
-            newRow["Remark"] = ((TextBox)this.List.FooterRow.FindControl("Remark")).Text.Trim();
+            newRow["prltno"] = ((TextBox)this.List.FooterRow.FindControl("prltno")).Text.Trim();
+            newRow["prloutno"] = ((TextBox)this.List.FooterRow.FindControl("prloutno")).Text.Trim();
+            newRow["prlpicno"] = ((TextBox)this.List.FooterRow.FindControl("prlpicno")).Text.Trim();
+            newRow["prlrule"] = ((TextBox)this.List.FooterRow.FindControl("prlrule")).Text.Trim();
+            newRow["prlum"] = ((TextBox)this.List.FooterRow.FindControl("prlum")).Text.Trim();
+            newRow["PRLPDTE"] = ((TextBox)this.List.FooterRow.FindControl("PRLPDTE")).Text.Trim();
+            newRow["PRLQTY"] = ((TextBox)this.List.FooterRow.FindControl("PRLQTY")).Text.Trim();
+            newRow["prlstation"] = ((TextBox)this.List.FooterRow.FindControl("prlstation")).Text.Trim();
+            newRow["prlmrk"] = ((TextBox)this.List.FooterRow.FindControl("prlmrk")).Text.Trim();
 
             //保存临时数据后重新绑定gridview
             table.Rows.Add(newRow);
@@ -159,10 +158,10 @@ namespace RLPUR.Web
                 HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                 if (rowCheckControl.Checked)
                 {
-                    var itemName = ((DataBoundLiteralControl)row.Cells[2].Controls[0]).Text.Trim(); //名称
+                    var itemNo = ((DataBoundLiteralControl)row.Cells[2].Controls[0]).Text.Trim(); //料号
                     foreach (DataRow dr in table.Rows)
                     {
-                        if (dr["ITEMNO"].ToString().Trim() == itemName)
+                        if (dr["prltno"].ToString().Trim() == itemNo)
                         {
                             table.Rows.Remove(dr);
                             break;
@@ -196,34 +195,27 @@ namespace RLPUR.Web
         /// </summary>
         protected void DeleteButton_Click(object sender, EventArgs e)
         {
-            bool deleted = false;
-            foreach (GridViewRow row in List.Rows)
+            using (PurProvider purProvider = new PurProvider())
             {
-                HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
-                if (rowCheckControl.Checked)
+                string prNo = PRNo.Text.Trim();
+                if (prNo.Length <= 0)
                 {
-                    var prltno = row.Cells[3].Text.Trim(); //工件号
-                    var prlsoseq = row.Cells[7].Text.Trim(); //工令序号
-                    foreach (DataRow dr in table.Rows)
-                    {
-                        if (dr["prltno"].ToString().Trim() == prltno && dr["prlsoseq"].ToString().Trim() == prlsoseq)
-                        {
-                            table.Rows.Remove(dr);
-                            break;
-                        }
-                    }
-                    //有项被删除
-                    deleted = true;
+                    this.ShowWarningMessage("请输入请购单号");
+                    return;
                 }
-            }
-            if (deleted)
-            {
-                ViewState["ViewDT"] = table;
-                BindTempData();
-            }
-            else
-            {
-                this.ShowInfoMessage(this.GetGlobalResourceString("NotSelectMessage"));
+
+                try
+                {
+                    purProvider.DeleteMatPR(prNo);
+
+                    //this.ShowMessage("删除成功");
+                    this.BindList();
+                }
+                catch (Exception error)
+                {
+                    this.ShowErrorMessage("删除失败。" + error.Message);
+                    return;
+                }
             }
         }
 
@@ -232,35 +224,99 @@ namespace RLPUR.Web
         /// </summary>
         protected void SaveButton_Click(object sender, EventArgs e)
         {
+            SqlConnection con = LocalGlobal.DbConnect();
+            con.Open();
+            SqlTransaction tran = con.BeginTransaction();//使用事务
+            SqlCommand cmd = new SqlCommand();
+            cmd.Connection = con;
+            cmd.Transaction = tran;
 
+            var dateModel = LocalGlobal.GetDateModel();
+            string prNo = string.Empty;
+
+            using (PurProvider purProvider = new PurProvider())
+            {
+                try
+                {
+                    if (PRNo.Text.Trim().Length == 0) //新增
+                    {
+                        prNo = purProvider.GetMaxPRNo().ToString();  //生成新的请购单号
+
+                        cmd.CommandText = purProvider.InsertPRSql(prNo, "", "", "S", "RMB", "材料请购", LocalGlobal.CurrentUserID, dateModel.DateStr, "", "0");
+                        cmd.ExecuteNonQuery();
+
+                        PRStatus.Text = "NE";
+                    }
+                    else
+                    {
+                        //修改请购单
+                        prNo = PRNo.Text.Trim();
+
+                        //先删除再添加
+                        cmd.CommandText = purProvider.DeletePRDetailSql(prNo);
+                        cmd.ExecuteNonQuery();
+
+                        //更新状态
+                        cmd.CommandText = purProvider.UpdatePRStatusSql(prNo, "UP");
+                        cmd.ExecuteNonQuery();
+
+                        PRStatus.Text = "UP";
+                    }
+
+                    #region Insert
+
+                    var table = ViewState["ViewDT"] as DataTable;
+                    int seq = 0;
+                    foreach (DataRow row in table.Rows)
+                    {
+                        seq++;
+
+                        string prDate = row["PRLPDTE"].ToString().Trim();
+                        prDate = LocalGlobal.ConvertDateFormat(prDate).ToString("yyyyMMdd");
+
+                        cmd.CommandText = purProvider.InsertMatPRDetailSql(prNo, seq.ToString(), row["PRLQTY"].ToString().Trim(), prDate, prlwhs.Text.Trim(), row["prltno"].ToString(), row["prlstation"].ToString(), row["prlrule"].ToString(), row["prlum"].ToString(), LocalGlobal.CurrentUserID, dateModel.DateStr, dateModel.TimeStr, row["prlmrk"].ToString(), row["prloutno"].ToString(), row["prlpicno"].ToString());
+
+                        cmd.ExecuteNonQuery();
+                    }
+
+                    #endregion
+
+                }
+                catch (Exception error)
+                {
+                    tran.Rollback();
+                    this.ShowErrorMessage("保存失败。" + error.Message);
+                    return;
+                }
+
+                tran.Commit();
+
+                PRNo.Text = prNo;
+                this.BindList();
+            }
         }
 
         #endregion
 
         #region 创建表结构及绑定
+
         protected DataTable CreateTable()
         {
             //定义table结构   
             DataTable dt1 = new DataTable();
             //不设置 默认为System.String  
-            dt1.Columns.Add("pRHSORD");
-            dt1.Columns.Add("prlnedm");
-            dt1.Columns.Add("prlsoseq");
-            dt1.Columns.Add("prhmno");
-            dt1.Columns.Add("prlmno");
-            dt1.Columns.Add("prltno");
-            dt1.Columns.Add("PRHSTAT");
+
             dt1.Columns.Add("PRLSEQ");
-            dt1.Columns.Add("PRLPROD");
-            dt1.Columns.Add("PRLPDTE");
-            dt1.Columns.Add("PRLQTY");
+            dt1.Columns.Add("prltno");
+            dt1.Columns.Add("prloutno");
+            dt1.Columns.Add("prlpicno");
             dt1.Columns.Add("prlrule");
             dt1.Columns.Add("prlum");
+            dt1.Columns.Add("PRLPDTE");
+            dt1.Columns.Add("PRLQTY");
             dt1.Columns.Add("prlstation");
-            dt1.Columns.Add("bommat");
-            dt1.Columns.Add("bomnam");
-            dt1.Columns.Add("bomseq");
-            dt1.Columns.Add("bomreq");
+            dt1.Columns.Add("prlmrk");
+
             //dt1.Rows.Add(dt1.NewRow());
             //ViewState["ViewDT"] = dt1;
             return dt1;
@@ -285,11 +341,7 @@ namespace RLPUR.Web
             this.List.DataBind();
         }
 
-
         #endregion
-
-
-
 
     }
 }

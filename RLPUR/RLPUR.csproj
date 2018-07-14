@@ -107,6 +107,10 @@
     <Content Include="Framework\AuthorityDetail.aspx" />
     <Content Include="Web\CommonPur.aspx" />
     <Content Include="Web\MaterialPur.aspx" />
+    <Content Include="Web\ShipMaintain.aspx" />
+    <EmbeddedResource Include="Web\ShipMaintain.aspx.js" />
+    <Content Include="Web\ShipNotice.aspx" />
+    <EmbeddedResource Include="Web\ShipNotice.aspx.js" />
     <EmbeddedResource Include="Web\MaterialPur.aspx.js" />
     <Content Include="Web\OutsidePur.aspx" />
     <Content Include="Web\PurMaintain.aspx" />
@@ -302,6 +306,20 @@
     </Compile>
     <Compile Include="Web\PurMaintain.aspx.designer.cs">
       <DependentUpon>PurMaintain.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\ShipMaintain.aspx.cs">
+      <DependentUpon>ShipMaintain.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\ShipMaintain.aspx.designer.cs">
+      <DependentUpon>ShipMaintain.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\ShipNotice.aspx.cs">
+      <DependentUpon>ShipNotice.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\ShipNotice.aspx.designer.cs">
+      <DependentUpon>ShipNotice.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

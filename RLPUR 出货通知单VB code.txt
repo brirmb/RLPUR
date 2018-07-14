@@ -11,6 +11,7 @@ Select Case Button.Key
 End Select
 End Sub
 
+//根据工令号查询
 Private Sub TxtSONO_Change()
     GrdSHIP.RemoveAll
     StrSql = "select a.*,b.*,rcnam from contract a,contratdetail b,salrcm where a.ordno=b.ordno and a.custno=rccust " _
@@ -36,6 +37,7 @@ Private Sub TxtSONO_Change()
     End If
 End Sub
 
+//保存
 Private Function SaveDate()
     Dim i, j As Integer
     Dim StrSTNO As String
@@ -103,3 +105,9 @@ Private Function SaveDate()
     TxtShipNO.Text = StrSTNO
     MsgBox "保存成功！", , "提示"
 End Function
+
+//转出货界面
+Private Sub SSCommand1_Click()
+PURSHIP.TxtShIP = TxtShipNO.Text
+PURSHIP.Show 1
+End Sub

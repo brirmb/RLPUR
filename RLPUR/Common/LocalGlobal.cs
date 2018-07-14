@@ -93,6 +93,45 @@ namespace RLPUR.Common
             return status;
         }
 
+        /// <summary>
+        /// 生成新发货单号
+        /// </summary>
+        /// <returns></returns>
+        public static string NewSTNo()
+        {
+            var dateModel = GetDateModel();
+
+            string no = string.Empty;
+
+            using (PurProvider purProvider = new PurProvider())
+            {
+                var param = purProvider.GetBaseParam("ST", "NO");
+
+                if (param != null && param.Rows.Count > 0)
+                {
+                    string stno = param.Rows[0]["description"].ToString(); //ST1703997
+                    string year = stno.Substring(2, 2);
+                    string num = stno.Substring(4, 5);
+                    if (dateModel.YearStr == year)
+                    {
+                        no = "ST" + year + (Util.ToInt(num) + 1).ToString().PadLeft(5, '0');
+                    }
+                    else
+                    {
+                        no = "ST" + dateModel.YearStr + (Util.ToInt(num) + 1).ToString().PadLeft(5, '0');
+                    }
+                }
+                else
+                {
+                    no = "ST" + dateModel.YearStr + "00001";
+                }
+
+                purProvider.UpdateBaseParam("ST", "NO", no);
+            }
+
+            return no;
+        }
+
         #region Excel
         public static void ToExcel(System.Web.UI.Control gv, string name)
         {

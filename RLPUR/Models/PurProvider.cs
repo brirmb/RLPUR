@@ -37,6 +37,16 @@ namespace RLPUR.Models
         }
 
         /// <summary>
+        /// 获取材料请购列表
+        /// </summary>
+        public DataTable GetMatPRDetailList(string prNo)
+        {
+            string sql = string.Format("select * from purprl,purprh where prhtyp='S' and prhno=prlno and prlno=N'{0}' order by prlseq ", prNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
         /// 获取请购维护列表-材料请购
         /// </summary>
         public DataTable GetPRDetailMat(string prNo)
@@ -185,12 +195,12 @@ namespace RLPUR.Models
         }
 
         /// <summary>
-        /// 新增请购单头表sql prType:N一般请购,F委外请购 prTypeDesc:一般请购、委外请购、材料请购
+        /// 新增请购单头表sql prType:N一般请购,F委外请购,S材料请购 prTypeDesc:一般请购、委外请购、材料请购
         /// </summary>
-        public string InsertPRSql(string prNo, string orNo, string drawNo, string prType, string prTypeDesc, string sysUsername, string strDate)
+        public string InsertPRSql(string prNo, string orNo, string drawNo, string prType, string curr, string prTypeDesc, string sysUsername, string strDate, string prhapby, string prhapdte)
         {
-            string sql = string.Format("INSERT INTO PURPRH VALUES('RH',N'{0}',N'{1}',N'{2}',N'{3}','NE',' ',N'{4}',N'{5}',0,N'{6}',N'{7}',0,N'{8}') ",
-                prNo, orNo, drawNo, prType, sysUsername, strDate, sysUsername, strDate, prTypeDesc
+            string sql = string.Format("INSERT INTO PURPRH VALUES('RH',N'{0}',N'{1}',N'{2}',N'{3}','NE',N'{4}',N'{5}',N'{6}',0,N'{7}',N'{8}',0,N'{9}') ",
+                prNo, orNo, drawNo, prType, curr, sysUsername, strDate, prhapby, prhapdte, prTypeDesc
                 );
             return sql;
         }
@@ -236,6 +246,16 @@ namespace RLPUR.Models
         }
 
         /// <summary>
+        /// 删除材料请购单
+        /// </summary>
+        public int DeleteMatPR(string prNo)
+        {
+            string sql = string.Format("update purprh set prhid='RZ' where prhtyp='S' and prhno=N'{0}' ", prNo);
+
+            return this.Execute(sql);
+        }
+
+        /// <summary>
         /// 新增请购明细表sql 
         /// </summary>
         public string InsertPRDetailSql(string prNo, string prSeq, string prlprod, string prQty, string prDate, string prlrdte, string prlfac, string orNo, string drawNo, string prltno, string prlstation, string prlrule, string isUrgent, string um, string sysUsername, string strDate, string strTime, string prTypeDesc, string orSeq)
@@ -247,12 +267,171 @@ namespace RLPUR.Models
         }
 
         /// <summary>
+        /// 新增材料请购明细sql 
+        /// </summary>
+        public string InsertMatPRDetailSql(string prNo, string prSeq, string prQty, string prDate, string prlwhs, string prltno, string prlstation, string prlrule, string um, string sysUsername, string strDate, string strTime, string remark, string prloutno, string prlpicno)
+        {
+            string sql = string.Format("INSERT INTO PURPRL VALUES('RL',N'{0}',N'{1}',N'RL',N'{2}',0,N'{3}',0,0,N'RL',N'{4}','RMB',0,'','',0,'','',N'{5}',N'{6}',0,N'{7}','N','N','N',N'{8}',N'{9}',N'{10}',N'{11}',N'{12}',0,0,N'材料采购',0,0,0,N'{13}',N'{14}',N'{15}') ",
+                prNo, prSeq, prQty, prDate, prlwhs, prltno, prlstation, prlrule, um, sysUsername, strDate, strTime, sysUsername, remark, prloutno, prlpicno
+                );
+            return sql;
+        }
+
+        /// <summary>
         /// 删除请购明细表Sql
         /// </summary>
         public string DeletePRDetailSql(string prNo)
         {
             string sql = string.Format("delete from purprl where prlno=N'{0}' ", prNo);
 
+            return sql;
+        }
+
+        #endregion
+
+        #region 出货
+
+        /// <summary>
+        /// 根据工令号获取出货通知列表
+        /// </summary>
+        public DataTable GetShipNoticeList(string orNo)
+        {
+            string sql = string.Format(" select a.*,b.*,rcnam from contract a,contratdetail b,salrcm where a.ordno=b.ordno and a.custno=rccust and a.ordno=N'{0}' order by seq", orNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取实际出货数量
+        /// </summary>
+        public int GetActualShipQty(string orNo, string seq)
+        {
+            string sql = string.Format("select sum(shipqact) rqty from shiping where shipsono=N'{0}' and shipseq=N'{1}' ", orNo, seq);
+
+            var obj = this.ExecuteScalar(sql);
+            if (obj != null)
+            {
+                return Util.ToInt(obj.ToString()); ;
+            }
+            else
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// 根据出货单号获取出货列表
+        /// </summary>
+        public DataTable GetShipList(string shipNo)
+        {
+            string sql = string.Format(" select * from shiping,contract where shipno=N'{0}' and left(shipsono,7)=ordno ", shipNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 根据工令号获取生产任务单
+        /// </summary>
+        public DataTable GetMOrder(string orNo)
+        {
+            string sql = string.Format(" select * from morder where mono=N'{0}' ", orNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 根据工令号获取备品工令
+        /// </summary>
+        public DataTable GetBeiping(string orNo)
+        {
+            string sql = string.Format(" select * from beipingongling where bpsono=N'{0}' ", orNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取工件库存Sql
+        /// </summary>
+        public DataTable GetInventoryByItem(string whCode, string drawNo)
+        {
+            string sql = string.Format("select * from inventory where whcode=N'{0}' and pono=N'{1}' ", whCode, drawNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取合同相关信息
+        /// </summary>
+        public DataTable GetContractInfo(string orNo, string seq)
+        {
+            string sql = string.Format("select * from contratdetail,contract where contratdetail.ordno=contract.ordno and contract.ordno=N'{0}' and seq=N'{1}' ", orNo, seq);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 新增出库记录Sql
+        /// </summary>
+        public string InsertShipSql(string spNo, string seq, string orNo, string drawNo, string custNo, string custName, string itemNo, string um, string orQty, string planQty, string actQty, string spDate, string status)
+        {
+            string sql = string.Format("insert into shiping values(N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{5}',N'{6}',N'{7}',N'{8}',N'{9}',N'{10}',N'{11}',N'{12}',N'{13}') ", spNo, seq, orNo, orNo, drawNo, custNo, custName, itemNo, um, orQty, planQty, actQty, spDate, status);
+            return sql;
+        }
+
+        /// <summary>
+        /// 更新出货数量sql
+        /// </summary>
+        public string UpdateShipQtySql(string shipNo, string shipSeq, int qty)
+        {
+            string sql = string.Format(" update shiping set shipqact=shipqact+{2} where shipno=N'{0}' and shipseq=N'{1}' ", shipNo, shipSeq, qty);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 更新出货状态sql
+        /// </summary>
+        public string UpdateShipStatusSql(string shipNo, string shipSeq)
+        {
+            string sql = string.Format(" update shiping set shipstatus=1 where shipno=N'{0}' and shipseq=N'{1}' and shipqplan=shipqact ", shipNo, shipSeq);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 新增工件库存Sql
+        /// </summary>
+        public string InsertInventorySql(string whCode, string drawNo, string orNO, string procCode, string itemNo, string qty, string um)
+        {
+            string sql = string.Format("insert into inventory values(N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{5}',N'{6}') ", whCode, drawNo, orNO, procCode, itemNo, -1 * Util.ToDecimal(qty), um);
+            return sql;
+        }
+
+        /// <summary>
+        /// 更新工件库存Sql
+        /// </summary>
+        public string UpdateInventorySql(string whCode, string drawNo, string qty)
+        {
+            string sql = string.Format(" update inventory set qty=qty-{2} where whcode=N'{0}' and pono=N'{1}' ", whCode, drawNo, Util.ToDecimal(qty));
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 新增出入库明细Sql
+        /// </summary>
+        public string InsertTransDetailSql(string orNo, string drawNo, string whCode, string qty, string kpNo, string orNo2, string type)
+        {
+            string sql = string.Format("insert into trans_detail values(N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{5}',N'{6}',N'{7}') ", orNo, drawNo, whCode, qty, DateTime.Now, kpNo, orNo2, type);
+            return sql;
+        }
+
+        /// <summary>
+        /// 新增质保金Sql
+        /// </summary>
+        public string InsertZhibaojinSql(string shipNo, string orNo, string seq, string itemNo, string drawNo, string custNo, string custName, string qty, string zbAmt, string zbSkamt, string shipDate, string shipTime, string limit, string lastDate)
+        {
+            string sql = string.Format("insert into zhibaojin values(N'{0}',N'{1}',N'{2}',N'{3}',N'{4}',N'{5}',N'{6}',N'{7}',N'{8}',N'{9}',N'{10}',N'{11}',N'{12}',N'{13}') ", shipNo, orNo, seq, itemNo, drawNo, custNo, custName, qty, zbAmt, zbSkamt, shipDate, shipTime, limit, lastDate);
             return sql;
         }
 
@@ -272,6 +451,16 @@ namespace RLPUR.Models
             }
             sql += " order by code ";
             return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 更新基础配置
+        /// </summary>
+        public int UpdateBaseParam(string type, string code, string desc)
+        {
+            string sql = string.Format("update baseparameter set description=N'{2}' where type=N'{0}' and code=N'{1}'", type, code, desc);
+
+            return this.Execute(sql);
         }
 
         /// <summary>

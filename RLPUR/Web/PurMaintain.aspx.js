@@ -44,11 +44,11 @@ function getVendor(venNo, obj) {
                 $(obj).val('');
                 $(obj).parent().find('.venname').val('');
                 $(obj).parent().find('.vencurr').val('');
-                iiWeb_ShowWarningMessage(response.message);
+                iiWeb_ShowMessage(response.message);
             }
         },
         error: function (err) {
-            iiWeb_ShowWarningMessage("执行失败");
+            iiWeb_ShowMessage("执行失败");
         }
 
     });

@@ -13,15 +13,4 @@ $(function () {
         }
     });
 
-    // 删除
-
-    $("#DeleteButton").click(function () {
-        return confirm(iiWeb_ConfirmMessage);
-    });
-
-    // 删除行
-
-    $("#DeleteRow").click(function () {
-        return confirm(iiWeb_ConfirmMessage);
-    });
 });

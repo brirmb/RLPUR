@@ -20,12 +20,25 @@
                     <li class="Content">
                         <asp:TextBox ID="PRNo" runat="server"></asp:TextBox>
                     </li>
+                    <li class="CaptionSmall">仓库
+                    </li>
+                    <li class="ContentSmall">
+                        <asp:TextBox ID="prlwhs" runat="server" Enabled="False" Text="LM" OnTextChanged="prlwhs_TextChanged"></asp:TextBox>
+                    </li>
+                    <li class="ContentSmall">
+                        <asp:Label ID="Label1" runat="server" Text="材料库"></asp:Label>
+                    </li>
+                    <li class="CaptionSmall">状态
+                    </li>
+                    <li class="ContentSmall">
+                        <asp:TextBox ID="PRStatus" runat="server" Enabled="False"></asp:TextBox>
+                    </li>
                     <li class="LineFeed"></li>
                     <li class="Button">
                         <asp:Button ID="OKButton" runat="server" Text="查询"
                             OnClick="OKButton_Click" />
-                        <asp:Button ID="CancelButton" runat="server" Text="取消"
-                            OnClick="CancelButton_Click" />
+                        <%--<asp:Button ID="CancelButton" runat="server" Text="取消"
+                            OnClick="CancelButton_Click" />--%>
                         <asp:Button ID="DeleteButton" runat="server" Text="<%$ Resources:iiWeb, DeleteButton %>"
                             CssClass="Highlighted" OnClick="DeleteButton_Click" />
                         <asp:Button ID="SaveButton" runat="server" Text="保存"
