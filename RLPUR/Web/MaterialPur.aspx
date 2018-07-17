@@ -23,7 +23,7 @@
                     <li class="CaptionSmall">仓库
                     </li>
                     <li class="ContentSmall">
-                        <asp:TextBox ID="prlwhs" runat="server" Enabled="False" Text="LM" OnTextChanged="prlwhs_TextChanged"></asp:TextBox>
+                        <asp:TextBox ID="prlwhs" runat="server" Enabled="False" Text="LM"></asp:TextBox>
                     </li>
                     <li class="ContentSmall">
                         <asp:Label ID="Label1" runat="server" Text="材料库"></asp:Label>

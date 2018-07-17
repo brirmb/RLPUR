@@ -54,6 +54,7 @@ namespace RLPUR.Web
             #region 页面内容
 
             this.PRNo.Text = string.Empty;
+            this.PRStatus.Text = string.Empty;
 
             #endregion
 
@@ -73,10 +74,18 @@ namespace RLPUR.Web
             using (PurProvider purProvider = new PurProvider())
             {
                 string prNo = PRNo.Text.Trim();
-                DataTable table = purProvider.GetMatPRDetailList(prNo);
+                if (prNo.Length > 0)
+                {
+                    DataTable table = purProvider.GetMatPRDetailList(prNo);
+                    ViewState["ViewDT"] = table;
+                    BindTempData();
+                }
+                else
+                {
+                    List.DataSource = null;
+                    List.DataBind();
+                }
 
-                List.DataSource = table;
-                List.DataBind();
             }
         }
 
@@ -224,6 +233,12 @@ namespace RLPUR.Web
         /// </summary>
         protected void SaveButton_Click(object sender, EventArgs e)
         {
+            var table = ViewState["ViewDT"] as DataTable;
+            if (table == null || table.Rows.Count == 0)
+            {
+                return;
+            }
+
             SqlConnection con = LocalGlobal.DbConnect();
             con.Open();
             SqlTransaction tran = con.BeginTransaction();//使用事务
@@ -265,7 +280,6 @@ namespace RLPUR.Web
 
                     #region Insert
 
-                    var table = ViewState["ViewDT"] as DataTable;
                     int seq = 0;
                     foreach (DataRow row in table.Rows)
                     {

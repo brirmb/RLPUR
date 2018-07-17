@@ -3,7 +3,7 @@
 $(function () {
 
     // 表单验证
-    $("#SaveButton").click(function () {
+    $("#CreateRow").click(function() {
         if (iiWeb_ValidateRequiredField()) {
             return true;
         }
