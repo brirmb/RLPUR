@@ -76,12 +76,15 @@ namespace RLPUR.Web
                 string prNo = PRNo.Text.Trim();
                 if (prNo.Length > 0)
                 {
+                    PRStatus.Text = LocalGlobal.GetPRStatus(prNo);
+
                     DataTable table = purProvider.GetMatPRDetailList(prNo);
                     ViewState["ViewDT"] = table;
                     BindTempData();
                 }
                 else
                 {
+                    this.Initialize();
                     List.DataSource = null;
                     List.DataBind();
                 }

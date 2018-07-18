@@ -57,7 +57,7 @@
             </div>
             <div class="List">
                 <asp:GridView ID="List" runat="server" EmptyDataText="<%$ Resources:iiWeb, EmptyData %>"
-                    EnableModelValidation="True" DataKeyNames="seq" OnRowDataBound="List_RowDataBound">
+                    EnableModelValidation="True" DataKeyNames="ordno,seq" OnRowDataBound="List_RowDataBound">
                     <Columns>
                         <asp:TemplateField>
                             <HeaderTemplate>

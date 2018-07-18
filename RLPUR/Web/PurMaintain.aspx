@@ -60,7 +60,7 @@
                         <asp:Button ID="PostButton" runat="server" Text="提交"
                             CssClass="Highlighted" OnClick="PostButton_Click" />
                         <asp:Button ID="PrintButton" runat="server" Text="打印"
-                            CssClass="Highlighted" OnClick="PrintButton_Click" />
+                            OnClick="PrintButton_Click" />
                     </li>
                 </ul>
             </div>
@@ -84,12 +84,12 @@
                                 <input type="checkbox" id="RowCheck" runat="server" class="Check" title="勾选" />
                             </ItemTemplate>
                         </asp:TemplateField>
-                        <asp:TemplateField HeaderText="序号" HeaderStyle-Width="5%">
+                        <%--<asp:TemplateField HeaderText="序号" HeaderStyle-Width="5%">
                             <ItemTemplate>
                                 <asp:Label ID="SEQ" runat="server" Text="<%# Container.DataItemIndex +1%>"></asp:Label>
                             </ItemTemplate>
-                        </asp:TemplateField>
-                        <%--<asp:BoundField DataField="prlseq" HeaderText="序号" />--%>
+                        </asp:TemplateField>--%>
+                        <asp:BoundField DataField="prlseq" HeaderText="序号" />
                         <asp:BoundField DataField="prltno" HeaderText="工件号" />
                         <asp:BoundField DataField="bomnam" HeaderText="工件名称" />
                         <asp:BoundField DataField="bommat" HeaderText="材质" />
@@ -99,17 +99,17 @@
                         <asp:BoundField DataField="PRLPDTE" HeaderText="需求日期" />
                         <asp:TemplateField HeaderText="单价">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlpacst" runat="server" Text='<%# Eval("prlpacst").ToString().Trim() %>' Width="90%" CssClass="Required Float"></asp:TextBox>
+                                <asp:TextBox ID="prlpacst" runat="server" Text='<%# Eval("prlpacst").ToString().Trim() %>' Width="90%" CssClass="Float"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商代码">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlvnd" runat="server" Text='<%# Eval("prlvnd").ToString().Trim() %>' Width="90%" CssClass="Required Integer venno"></asp:TextBox>
+                                <asp:TextBox ID="prlvnd" runat="server" Text='<%# Eval("prlvnd").ToString().Trim() %>' Width="90%" CssClass="venno"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="厂商名称">
                             <ItemTemplate>
-                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="Required venname"></asp:TextBox>
+                                <asp:TextBox ID="prlvndm" runat="server" Text='<%# Eval("prlvndm").ToString().Trim() %>' Width="90%" CssClass="venname"></asp:TextBox>
                             </ItemTemplate>
                         </asp:TemplateField>
                         <asp:TemplateField HeaderText="币别">

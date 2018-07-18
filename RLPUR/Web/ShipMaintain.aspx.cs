@@ -196,12 +196,12 @@ namespace RLPUR.Web
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                         if (rowCheckControl.Checked)
                         {
-                            string seq = row.Cells[1].ToString().Trim();
-                            string drawNo = row.Cells[2].ToString().Trim();
-                            string itemName = row.Cells[3].ToString().Trim();
-                            string rQty = row.Cells[4].ToString().Trim();
-                            string um = row.Cells[5].ToString().Trim();
-                            string planQty = row.Cells[6].ToString().Trim(); //计划出货数量
+                            string seq = row.Cells[1].Text.Trim();
+                            string drawNo = row.Cells[2].Text.Trim();
+                            string itemName = row.Cells[3].Text.Trim();
+                            string rQty = row.Cells[4].Text.Trim();
+                            string um = row.Cells[5].Text.Trim();
+                            string planQty = row.Cells[6].Text.Trim(); //计划出货数量
                             string actualQty = ((TextBox)row.FindControl("shipqact")).Text.Trim(); //出货数量
 
                             #region 检测
@@ -286,7 +286,7 @@ namespace RLPUR.Web
 
                 tran.Commit();
 
-                this.ShowMessage("出货成功");
+                this.ShowInfoMessage("出货成功");
                 this.Initialize();
                 this.BindList();
             }

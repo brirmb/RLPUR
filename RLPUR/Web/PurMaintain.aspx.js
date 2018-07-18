@@ -37,13 +37,14 @@ function getVendor(venNo, obj) {
         //timeout: 50000,
         //contentType: 'application/json;charset=utf-8',
         success: function (response) {
+            //alert(JSON.stringify(response));
             if (response.success) {
-                $(obj).parent().find('.venname').val(response.vendorName);
-                $(obj).parent().find('.vencurr').val(response.curr);
+                $(obj).parent().parent().find('.venname').val(response.vendorName);
+                $(obj).parent().parent().find('.vencurr').val(response.curr);
             } else {
                 $(obj).val('');
-                $(obj).parent().find('.venname').val('');
-                $(obj).parent().find('.vencurr').val('');
+                $(obj).parent().parent().find('.venname').val('');
+                $(obj).parent().parent().find('.vencurr').val('');
                 iiWeb_ShowMessage(response.message);
             }
         },

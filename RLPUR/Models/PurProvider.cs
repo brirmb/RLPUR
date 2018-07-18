@@ -220,7 +220,7 @@ namespace RLPUR.Models
         /// </summary>
         public string UpdatePRDetailSql(string prNo, string prlseq, string price, string vendorNo, string vendorName, string curr, string isWeight, string prlrdte)
         {
-            string sql = string.Format("update purprl set prlpacst=N'{2}',prlvnd=N'{3}',prlvndm=N'{4}',prlcur=N'{5}',prlwhs=N'{6}',prlrdte=N'{7}' where prlno=N'{0}' and prlseq=N'{1}' ", prNo, prlseq, price, vendorNo, vendorName, curr, isWeight);
+            string sql = string.Format("update purprl set prlpacst=N'{2}',prlvnd=N'{3}',prlvndm=N'{4}',prlcur=N'{5}',prlwhs=N'{6}',prlrdte=N'{7}' where prlno=N'{0}' and prlseq=N'{1}' ", prNo, prlseq, price, vendorNo, vendorName, curr, isWeight, prlrdte);
 
             return sql;
         }

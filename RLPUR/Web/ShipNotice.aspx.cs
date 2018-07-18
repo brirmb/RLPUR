@@ -75,6 +75,14 @@ namespace RLPUR.Web
         /// </summary>
         private void BindList()
         {
+            /* 查找可出货工令
+             SELECT m.* FROM(
+             select b.*,rcnam,(select sum(shipqact) rqty from shiping where shipsono=a.ordno and shipseq=b.seq) rqty
+             FROM contract a,contratdetail b,salrcm 
+             WHERE a.ordno=b.ordno and a.custno=rccust 
+             )m WHERE m.ordqty-m.rqty>0 
+            */
+
             using (PurProvider purProvider = new PurProvider())
             {
                 string orNo = ORDNO.Text.Trim();
@@ -183,7 +191,7 @@ namespace RLPUR.Web
 
                             #region 检测
 
-                            string noShipQty = row.Cells[6].ToString().Trim(); //未出货数量
+                            string noShipQty = row.Cells[6].Text.Trim(); //未出货数量
                             string planQty = ((TextBox)row.FindControl("shipqplan")).Text.Trim(); //计划出货数量
                             string shipDate = ((TextBox)row.FindControl("shipdate")).Text.Trim(); //出货日期
 
@@ -206,7 +214,7 @@ namespace RLPUR.Web
                                 return;
                             }
 
-                            string orNo = ((DataRowView)row.DataItem)["ordno"].ToString().Trim();
+                            string orNo = List.DataKeys[row.RowIndex]["ordno"].ToString().Trim();
                             var morder = purProvider.GetMOrder(orNo);
                             if (morder == null || morder.Rows.Count == 0)
                             {
@@ -221,6 +229,7 @@ namespace RLPUR.Web
 
                             #endregion
 
+                            shipDate = LocalGlobal.ConvertDateFormat(shipDate).ToString("yyyyMMdd");
                             cmd.CommandText = purProvider.InsertShipSql(shipNo, seq.ToString(), orNo, row.Cells[2].Text.Trim(), CustNo.Text.Trim(), CustName.Text.Trim(), row.Cells[3].Text.Trim(), row.Cells[5].Text.Trim(), row.Cells[4].Text.Trim(), planQty, "0", shipDate, "0");
                             cmd.ExecuteNonQuery();
                         }

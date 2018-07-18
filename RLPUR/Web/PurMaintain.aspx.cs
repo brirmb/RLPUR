@@ -81,32 +81,41 @@ namespace RLPUR.Web
             using (PurProvider purProvider = new PurProvider())
             {
                 string prNo = PRNo.Text.Trim();
-
-                var pur = purProvider.GetPRDetail(prNo);
-                if (pur != null)
+                if (prNo.Length > 0)
                 {
-                    ORDNO.Text = pur["PRHSORD"].ToString();
-                    DRAWNO.Text = pur["PRHMNO"].ToString();
-                    PRType.Text = pur["prhpgm"].ToString();
-                    PRStatus.Text = pur["PRHSTAT"].ToString();
-
-                    DataTable table;
-                    if (ORDNO.Text.Trim().Length > 0) //非材料请购
+                    var pur = purProvider.GetPRDetail(prNo);
+                    if (pur != null)
                     {
-                        table = purProvider.GetPRDetailNotMat(prNo);
+                        ORDNO.Text = pur["PRHSORD"].ToString();
+                        DRAWNO.Text = pur["PRHMNO"].ToString();
+                        PRType.Text = pur["prhpgm"].ToString();
+                        PRStatus.Text = pur["PRHSTAT"].ToString();
+
+                        DataTable table;
+                        if (ORDNO.Text.Trim().Length > 0) //非材料请购
+                        {
+                            table = purProvider.GetPRDetailNotMat(prNo);
+                        }
+                        else  //材料请购
+                        {
+                            table = purProvider.GetPRDetailMat(prNo);
+                        }
+
+                        List.DataSource = table;
+                        List.DataBind();
+
+                        PostButton.Enabled = true;
                     }
-                    else  //材料请购
+                    else
                     {
-                        table = purProvider.GetPRDetailMat(prNo);
+                        this.Initialize();
+                        List.DataSource = null;
+                        List.DataBind();
                     }
-
-                    List.DataSource = table;
-                    List.DataBind();
-
-                    PostButton.Enabled = true;
                 }
                 else
                 {
+                    this.Initialize();
                     List.DataSource = null;
                     List.DataBind();
                 }
@@ -179,7 +188,7 @@ namespace RLPUR.Web
 
             if (PRNo.Text.Trim().Length <= 0)
             {
-                this.ShowWarningMessage("请购单号不存在");
+                this.ShowWarningMessage("请输入请购单号！");
                 return;
             }
 
@@ -204,12 +213,35 @@ namespace RLPUR.Web
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                         if (rowCheckControl.Checked)
                         {
-                            string seq = row.Cells[2].ToString().Trim();
+                            string seq = row.Cells[2].Text.Trim();
                             string price = ((TextBox)row.FindControl("prlpacst")).Text.Trim();
                             string vendorNo = ((TextBox)row.FindControl("prlvnd")).Text.Trim();
                             string vendorName = ((TextBox)row.FindControl("prlvndm")).Text.Trim();
                             string curr = ((TextBox)row.FindControl("prlcur")).Text.Trim();
                             string isWeight = IsWeight.Checked ? "Y" : "";
+
+                            #region 检测
+
+                            if (Util.ToDecimal(price) <= 0)
+                            {
+                                tran.Rollback();
+                                this.ShowWarningMessage("请填写单价");
+                                return;
+                            }
+                            if (vendorNo.Length <= 0)
+                            {
+                                tran.Rollback();
+                                this.ShowWarningMessage("请填写厂商代码");
+                                return;
+                            }
+                            if (vendorName.Length <= 0)
+                            {
+                                tran.Rollback();
+                                this.ShowWarningMessage("请填写厂商名称");
+                                return;
+                            }
+
+                            #endregion
 
                             cmd.CommandText = purProvider.UpdatePRDetailSql(PRNo.Text.Trim(), seq.ToString(), price, vendorNo, vendorName, curr, isWeight, dateModel.DateStr);
                             cmd.ExecuteNonQuery();
@@ -240,10 +272,10 @@ namespace RLPUR.Web
                 }
 
                 tran.Commit();
-
-                this.BindList();
-                this.PostButton.Enabled = true;
             }
+
+            this.BindList();
+            this.PostButton.Enabled = true;
         }
 
         /// <summary>
@@ -255,7 +287,7 @@ namespace RLPUR.Web
 
             if (PRNo.Text.Trim().Length <= 0)
             {
-                this.ShowWarningMessage("请购单号不存在");
+                this.ShowWarningMessage("请输入请购单号！");
                 return;
             }
 
@@ -278,7 +310,7 @@ namespace RLPUR.Web
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                         if (rowCheckControl.Checked)
                         {
-                            string seq = row.Cells[2].ToString().Trim();
+                            string seq = row.Cells[2].Text.Trim();
                             string status = row.Cells[14].Text.Trim();
 
                             if (status == "OK")
@@ -313,9 +345,9 @@ namespace RLPUR.Web
                 }
 
                 tran.Commit();
-
-                this.BindList();
             }
+
+            this.BindList();
         }
 
         /// <summary>

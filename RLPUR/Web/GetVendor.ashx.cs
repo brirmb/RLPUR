@@ -31,7 +31,7 @@ namespace RLPUR.Web
                     context.Response.Write("{\"success\":true,\"vendorName\":\"" + vendor["avnam"].ToString() + "\",\"curr\":\"" + vendor["avcur"].ToString() + "\"}");
                 }
 
-                context.Response.End();
+                //context.Response.End();
             }
         }
 
