@@ -52,7 +52,7 @@
                     <asp:Button ID="DeleteRow" runat="server" Text="删除行" OnClick="DeleteRow_Click" />
                 </div>
                 <asp:GridView ID="List" runat="server" EmptyDataText="<%$ Resources:iiWeb, EmptyData %>"
-                    EnableModelValidation="True" DataKeyNames="prlseq" PageSize="100" AllowPaging="false" OnRowDataBound="List_RowDataBound" ShowFooter="true" OnPreRender="List_PreRender" OnLoad="List_Load">
+                    EnableModelValidation="True" DataKeyNames="prlseq" AllowPaging="false" OnRowDataBound="List_RowDataBound" ShowFooter="true" OnPreRender="List_PreRender" OnLoad="List_Load">
                     <Columns>
                         <asp:TemplateField HeaderText="删除" HeaderStyle-Width="5%">
                             <ItemTemplate>

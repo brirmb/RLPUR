@@ -51,16 +51,12 @@
                             OnClick="OKButton_Click" />
                         <asp:Button ID="CancelButton" runat="server" Text="取消"
                             OnClick="CancelButton_Click" />
-                        <%--     <asp:Button ID="CreateButton" runat="server" Text="<%$ Resources:iiWeb, CreateButton %>"
-                            CssClass="Highlighted" OnClick="CreateButton_Click" />
-                        <asp:Button ID="DeleteButton" runat="server" Text="<%$ Resources:iiWeb, DeleteButton %>"
-                            CssClass="Highlighted" OnClick="DeleteButton_Click" />--%>
                         <asp:Button ID="SaveButton" runat="server" Text="保存"
                             CssClass="Highlighted" OnClick="SaveButton_Click" />
                         <asp:Button ID="PostButton" runat="server" Text="提交"
                             CssClass="Highlighted" OnClick="PostButton_Click" />
-                        <asp:Button ID="PrintButton" runat="server" Text="打印"
-                            OnClick="PrintButton_Click" />
+                        <%--         <asp:Button ID="PrintButton" runat="server" Text="打印"
+                            OnClick="PrintButton_Click" />--%>
                     </li>
                 </ul>
             </div>

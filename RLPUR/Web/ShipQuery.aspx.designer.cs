@@ -10,7 +10,7 @@
 namespace RLPUR.Web {
     
     
-    public partial class PurMaintain {
+    public partial class ShipQuery {
         
         /// <summary>
         /// form1 控件。
@@ -31,15 +31,6 @@ namespace RLPUR.Web {
         protected global::System.Web.UI.WebControls.Label PageTitle;
         
         /// <summary>
-        /// PRNo 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox PRNo;
-        
-        /// <summary>
         /// ORDNO 控件。
         /// </summary>
         /// <remarks>
@@ -58,31 +49,31 @@ namespace RLPUR.Web {
         protected global::System.Web.UI.WebControls.TextBox PRStatus;
         
         /// <summary>
-        /// PRType 控件。
+        /// TextBox1 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox PRType;
+        protected global::System.Web.UI.WebControls.TextBox TextBox1;
         
         /// <summary>
-        /// DRAWNO 控件。
+        /// DateFrom 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox DRAWNO;
+        protected global::System.Web.UI.WebControls.TextBox DateFrom;
         
         /// <summary>
-        /// IsWeight 控件。
+        /// DateTo 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.CheckBox IsWeight;
+        protected global::System.Web.UI.WebControls.TextBox DateTo;
         
         /// <summary>
         /// OKButton 控件。
@@ -103,22 +94,13 @@ namespace RLPUR.Web {
         protected global::System.Web.UI.WebControls.Button CancelButton;
         
         /// <summary>
-        /// SaveButton 控件。
+        /// ExcelButton 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button SaveButton;
-        
-        /// <summary>
-        /// PostButton 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button PostButton;
+        protected global::System.Web.UI.WebControls.Button ExcelButton;
         
         /// <summary>
         /// List 控件。

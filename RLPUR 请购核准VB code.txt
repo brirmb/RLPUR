@@ -1,0 +1,111 @@
+
+//grdHead请购工令信息 grdDetail请购明细
+
+Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
+    Select Case Button.Key
+        Case "Find"         //查询
+            Call Inquiry
+        Case "SelAll"       //全选
+            Call SelectAll
+        Case "Approve"      //核准
+            Call Appove
+        Case "Reject"       //否决
+            Call Reject
+        Case "Exit"
+            Unload Me
+    End Select
+End Sub
+
+//查询
+Private Function Inquiry()
+    grdHead.RemoveAll
+    StrSql = "select distinct PRHNO ,PRHCBY ,PRHCDTE ,PRHSTAT ,PRHTYP ,PRHSORD ,PRHMNO from purprh,purprl where PRHID='RH' and prlid='RL' and prhno=prlno and prlpmt='Y' and prlapr='N' order by prhno"
+    Set recRec = conn.Execute(StrSql)
+    If Not recRec.EOF Then
+        While Not recRec.EOF
+            grdHead.AddItem recRec.Fields("PRHNO").Value _  请购单号
+            & vbTab & recRec.Fields("PRHCBY").Value _       请购人 
+            & vbTab & recRec.Fields("PRHCDTE").Value _      日期
+            & vbTab & recRec.Fields("PRHSTAT").Value _      状态码
+            & vbTab & recRec.Fields("PRHTYP").Value _       类型
+            & vbTab & recRec.Fields("PRHSORD").Value _      工令号
+            & vbTab & recRec.Fields("PRHMNO").Value         图号
+            recRec.MoveNext
+        Wend
+    Else
+        MsgBox "没有等待签核的请购!", , "提示"
+    End If
+End Function
+
+//双击GrdHead带出grdDetail数据
+Private Sub GrdHead_DblClick()
+    If grdHead.Col >= 0 Or grdHead.SelBookmarks.Count >= 0 Then
+        grdDetail.RemoveAll
+        grdDetail.Visible = True
+        StrSql = "select purprl.*,(select idesc from iim where iid='IM' and iprod=prlprod) idesc,nvl((select fotfct from tsfcfot where fotwno=prlsord and prltno=fotpno and prlstation=fotsat and rownum<=1),0) fotfct from purprl where prlid='RL' and prlpmt='Y' and PRLAPR='N' and prlno='" & grdHead.Columns("PR NO.").Value & "' "    //请购单号
+        Set recRec = conn.Execute(StrSql)
+            If Not recRec.EOF Then
+                While Not recRec.EOF
+                    grdDetail.AddItem True _
+                    & vbTab & recRec.Fields("prlno").Value _                                            请购单号
+                    & vbTab & recRec.Fields("prlseq").Value _                                           序号
+                    & vbTab & recRec.Fields("prlprod").Value _                                          
+                    & vbTab & recRec.Fields("prlmno").Value & "-" & recRec.Fields("prltno").Value _     
+                    & vbTab & recRec.Fields("prlstation").Value _
+                    & vbTab & recRec.Fields("prlqty").Value _
+                    & vbTab & recRec.Fields("prlvnd").Value _
+                    & vbTab & recRec.Fields("prlpacst").Value _
+                    & vbTab & recRec.Fields("prlcur").Value _
+                    & vbTab & recRec.Fields("fotfct").Value _
+                    & vbTab & recRec.Fields("prlplnh").Value _
+                    & vbTab & recRec.Fields("prldue").Value
+                    recRec.MoveNext
+                Wend
+            End If
+    End If
+End Sub
+
+//核准
+Private Function Appove()
+        IntAnswer = MsgBox("确认核准吗!?", vbYesNo, "提示")
+        If IntAnswer = vbNo Then
+            Exit Function
+        End If
+        conn.BeginTrans
+        grdDetail.MoveFirst
+        For i = 0 To grdDetail.Rows - 1
+            If grdDetail.Columns("Y/N").Value = True Then  //勾选
+                StrSql = "update purprl set PRLAPR='Y' where prlno='" & grdDetail.Columns("PR NO").Value & "' and prlseq='" & grdDetail.Columns("Seq").Value & "'"
+                conn.Execute (StrSql)
+            End If
+            grdDetail.MoveNext
+        Next i
+        Call Inquiry
+        grdDetail.RemoveAll
+        
+        conn.CommitTrans
+        Exit Function
+End Function
+
+//否决
+Private Function Reject()
+    IntAnswer = MsgBox("确认否决吗!?", vbYesNo, "提示")
+    If IntAnswer = vbNo Then
+        Exit Function
+    End If
+    conn.BeginTrans
+
+    grdDetail.MoveFirst
+    For i = 0 To grdDetail.Rows - 1
+        If grdDetail.Columns("Y/N").Value = True Then
+        StrSql = "update purprl set PRLAPR='R',prlpmt='N' where prlno='" & grdDetail.Columns("PR NO").Value & "' and prlseq='" & grdDetail.Columns("Seq").Value & "'"
+        conn.Execute (StrSql)
+        End If
+        grdDetail.MoveNext
+    Next i
+    Call Inquiry
+    grdDetail.RemoveAll
+
+    conn.CommitTrans
+    Exit Function
+End Function

@@ -1,0 +1,106 @@
+
+Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
+    Select Case Button.Key
+        Case "Find"
+            Call Inquiry  //查询
+        Case "Print"
+            Call ToExcel  //导出excel
+        Case "Exit"
+            Unload Me
+    End Select
+End Sub
+
+//查询
+Private Function Inquiry()
+    Dim DbAmt As Double
+    GrdPR.RemoveAll
+    StrSql = "select prlno,prlseq,PRLSORD,PRLMNO,PRLTNO,bomnam,bommat,PRLSTATION,PRLQTY,PRLVND,prlvndm,PRLPACST,PRLUM,PRLCUR,prlcdte,prlpdte"
+    StrSql = StrSql & " from PURPRL,tsfcbom where PRLID='RL' and bomwno=prlsord and prlsoseq=bomseq "
+    If Len(txtPRFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLNO>=" & txtPRFrom.Text & ""         请购单号起始
+    End If
+    If Len(txtPRTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLNO<=" & txtPRTo.Text & ""
+    End If
+    If Len(txtSONOFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLSORD>='" & txtSONOFrom.Text & "'"   工令号起始
+    End If
+    If Len(txtSONOTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLSORD<='" & txtSONOTo.Text & "'"
+    End If
+    If Len(txtVendorFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLVND>='" & txtVendorFrom.Text & "'"  厂商代码起始
+    End If
+    If Len(txtVendorTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLVND<='" & txtVendorTo.Text & "'"
+    End If
+    
+    StrSql = StrSql & " and PRLCDTE between '" & Format(txtDateFrom.Value, "yyyymmdd") & "' and '" & Format(txtDateTo.Value, "yyyymmdd") & "'"                                                               请购日期区间
+    
+    If Len(txtModelFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLMNO>='" & txtModelFrom.Text & "'"   图号起始  
+    End If
+    If Len(txtModelTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLMNO<='" & txtModelTo.Text & "'"
+    End If
+    If Trim(txtToolFrom.Text) <> "" Then
+        StrSql = StrSql & " and PRLTNO like '%" & Trim(txtToolFrom) & "%'"   工件号
+    End If
+    If Trim(TxtPName.Text) <> "" Then
+        StrSql = StrSql & " and bomnam like '%" & Trim(TxtPName) & "%'"      工件名
+    End If
+
+    StrSql = StrSql & " union "
+    
+    StrSql = StrSql & " select prlno,prlseq,PRLSORD,PRLMNO,PRLTNO,prloutno,prlpicno,PRLSTATION,PRLQTY,PRLVND,prlvndm,PRLPACST,PRLUM,PRLCUR,prlcdte,prlpdte "
+    StrSql = StrSql & " from purprl where prlsord='' "
+    If Len(txtPRFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLNO>=" & txtPRFrom.Text & ""
+    End If
+    If Len(txtPRTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLNO<=" & txtPRTo.Text & ""
+    End If
+    If Len(txtVendorFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLVND>='" & txtVendorFrom.Text & "'"
+    End If
+    If Len(txtVendorTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLVND<='" & txtVendorTo.Text & "'"
+    End If
+    
+    StrSql = StrSql & " and PRLCDTE between '" & Format(txtDateFrom.Value, "yyyymmdd") & "' and '" & Format(txtDateTo.Value, "yyyymmdd") & "'"
+    
+    If Len(txtModelFrom.Text) > 0 Then
+        StrSql = StrSql & " and PRLMNO>='" & txtModelFrom.Text & "'"
+    End If
+    If Len(txtModelTo.Text) > 0 Then
+        StrSql = StrSql & " and PRLMNO<='" & txtModelTo.Text & "'"
+    End If
+    If Trim(txtToolFrom.Text) <> "" Then
+        StrSql = StrSql & " and PRLTNO like '%" & Trim(txtToolFrom) & "%'"
+    End If
+    If Trim(TxtPName.Text) <> "" Then
+        StrSql = StrSql & " and bomnam like '%" & Trim(TxtPName) & "%'"
+    End If
+    
+    StrSql = StrSql & " order by prlno,prlseq "
+    Set recRec = conn.Execute(StrSql)
+    If Not recRec.EOF Then
+        
+        While Not recRec.EOF
+            DbAmt = DbAmt + recRec.Fields("PRLPACST").Value * recRec.Fields("PRLQTY").Value
+            GrdPR.AddItem recRec.Fields("PRLNO").Value & vbTab & recRec.Fields("PRLSEQ").Value _
+                & vbTab & recRec.Fields("PRLSORD").Value _
+                & vbTab & recRec.Fields("PRLMNO").Value & vbTab & recRec.Fields("PRLTNO").Value _
+                & vbTab & recRec.Fields(5).Value & vbTab & recRec.Fields(6).Value _
+                & vbTab & recRec.Fields("PRLSTATION").Value & vbTab & recRec.Fields("PRLQTY").Value _
+                & vbTab & recRec.Fields("PRLVND").Value & vbTab & recRec.Fields("prlvndm").Value _
+                & vbTab & recRec.Fields("PRLPACST").Value & vbTab & recRec.Fields("PRLUM").Value _
+                & vbTab & recRec.Fields("PRLPACST").Value * recRec.Fields("PRLQTY").Value _
+                & vbTab & recRec.Fields("PRLCUR").Value & vbTab & recRec.Fields("prlcdte").Value _
+                & vbTab & recRec.Fields("prlpdte").Value
+            recRec.MoveNext
+        Wend
+        
+    End If
+    Text1.Text = DbAmt       总金额
+End Function

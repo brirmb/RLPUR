@@ -1,0 +1,41 @@
+
+Private Sub Toolbar1_ButtonClick(ByVal Button As MSComctlLib.Button)
+Select Case Button.Key
+    Case "find"
+        Call FindST   //查询
+    Case "export"
+        If SSDBGrid1.Rows > 0 Then
+            Call CreateXlsReport(SSDBGrid1)  //导出excel
+        End If
+    Case "exit"
+        Unload Me
+End Select
+End Sub
+
+Private Sub Form_Load()
+  DTPicker2.Value = Date
+End Sub
+
+//客户查询弹窗控件
+//查询
+Private Function FindST()
+    SSDBGrid1.RemoveAll
+    StrSql = "select tsfcbomh.bomhmno mno2,* from shiping left join tsfcbomh on bomhwno=shipso where shipdate>= '" & Format(DTPicker1.Value, "yyyymmdd")
+    StrSql = StrSql & "' and shipdate<= '" & Format(DTPicker2.Value, "yyyymmdd") & "'"         //日期区间
+    If Combo1.Text <> "" Then
+        StrSql = StrSql & " and shipsono='" & Combo1 & "'"           //工令号
+    End If
+    If Text1.Text <> "" Then
+        StrSql = StrSql & " and shipcustno=" & Text1.Text            //客户代码
+    End If 
+    Set recRec = conn.Execute(StrSql)
+    Do While Not recRec.EOF
+        SSDBGrid1.AddItem recRec!shipno & vbTab & recRec!shipsono & vbTab & recRec!shipmno & vbTab _
+            & recRec!shipname & vbTab & recRec!shipunit & vbTab _
+            & recRec!shipqact & vbTab & recRec!shipdate & vbTab & recRec!shipcustno & vbTab & recRec!shipcustname
+        recRec.MoveNext
+    Loop
+    recRec.Close
+
+    Exit Function
+End Function
