@@ -21,7 +21,7 @@
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
-    <IISExpressUseClassicPipelineMode />
+    <IISExpressUseClassicPipelineMode>false</IISExpressUseClassicPipelineMode>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
     <UseGlobalApplicationHostFile />
@@ -107,7 +107,9 @@
     <Content Include="Framework\AuthorityDetail.aspx" />
     <Content Include="Web\CommonPur.aspx" />
     <Content Include="Web\MaterialPur.aspx" />
+    <Content Include="Web\PurQuery.aspx" />
     <Content Include="Web\ShipMaintain.aspx" />
+    <Content Include="Web\ShipQuery.aspx" />
     <EmbeddedResource Include="Web\ShipMaintain.aspx.js" />
     <Content Include="Web\ShipNotice.aspx" />
     <EmbeddedResource Include="Web\ShipNotice.aspx.js" />
@@ -307,6 +309,13 @@
     <Compile Include="Web\PurMaintain.aspx.designer.cs">
       <DependentUpon>PurMaintain.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web\PurQuery.aspx.cs">
+      <DependentUpon>PurQuery.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\PurQuery.aspx.designer.cs">
+      <DependentUpon>PurQuery.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Web\ShipMaintain.aspx.cs">
       <DependentUpon>ShipMaintain.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -320,6 +329,13 @@
     </Compile>
     <Compile Include="Web\ShipNotice.aspx.designer.cs">
       <DependentUpon>ShipNotice.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\ShipQuery.aspx.cs">
+      <DependentUpon>ShipQuery.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\ShipQuery.aspx.designer.cs">
+      <DependentUpon>ShipQuery.aspx</DependentUpon>
     </Compile>
   </ItemGroup>
   <ItemGroup>

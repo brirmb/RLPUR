@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Text;
 using System.Web;
 
 namespace RLPUR.Models
@@ -104,6 +105,132 @@ namespace RLPUR.Models
             string sql = string.Format("select distinct prlvndm from purprl where prlno=N'{0}' ", prNo);
 
             return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 请购查询
+        /// </summary>
+        /// <returns></returns>
+        public DataTable PurQuery(string prNoFrom, string prNoTo, string orNoFrom, string orNoTo, string venFrom, string venTo, string dateFrom, string dateTo, string drawNoFrom, string drawNoTo, string prlNo, string prlName)
+        {
+            StringBuilder sql = new StringBuilder();
+            sql.Append("select prlno,prlseq,PRLSORD,PRLMNO,PRLTNO,bomnam,bommat,PRLSTATION,PRLQTY,PRLVND,prlvndm,PRLPACST,PRLUM,PRLCUR,prlcdte,prlpdte from PURPRL,tsfcbom where PRLID='RL' and bomwno=prlsord and prlsoseq=bomseq");
+
+            if (!string.IsNullOrWhiteSpace(orNoFrom))
+            {
+                sql.AppendFormat(" and PRLSORD>='{0}' ", orNoFrom);
+            }
+            if (!string.IsNullOrWhiteSpace(orNoTo))
+            {
+                sql.AppendFormat(" and PRLSORD<='{0}' ", orNoTo);
+            }
+
+            string condition = GetPurQueryCondition(prNoFrom, prNoTo, orNoFrom, orNoTo, venFrom, venTo, dateFrom, dateTo,
+                drawNoFrom, drawNoTo, prlNo, prlName);
+            if (!string.IsNullOrWhiteSpace(condition))
+            {
+                sql.Append(condition);
+            }
+
+            sql.Append(" union ");
+            sql.Append(" select prlno,prlseq,PRLSORD,PRLMNO,PRLTNO,prloutno,prlpicno,PRLSTATION,PRLQTY,PRLVND,prlvndm,PRLPACST,PRLUM,PRLCUR,prlcdte,prlpdte from purprl where prlsord='' ");
+
+            if (!string.IsNullOrWhiteSpace(condition))
+            {
+                sql.Append(condition);
+            }
+
+            sql.Append(" order by prlno,prlseq ");
+
+            return this.Query(sql.ToString());
+        }
+
+        /// <summary>
+        /// 拼接查询条件
+        /// </summary>
+        private string GetPurQueryCondition(string prNoFrom, string prNoTo, string orNoFrom, string orNoTo, string venFrom, string venTo, string dateFrom, string dateTo, string drawNoFrom, string drawNoTo, string prlNo, string prlName)
+        {
+            StringBuilder sql = new StringBuilder("");
+            if (!string.IsNullOrWhiteSpace(prNoFrom))
+            {
+                sql.AppendFormat(" and PRLNO>={0} ", prNoFrom);
+            }
+            if (!string.IsNullOrWhiteSpace(prNoTo))
+            {
+                sql.AppendFormat(" and PRLNO<={0} ", prNoTo);
+            }
+            //if (!string.IsNullOrWhiteSpace(orNoFrom))
+            //{
+            //    sql.AppendFormat(" and PRLSORD>='{0}' ", orNoFrom);
+            //}
+            //if (!string.IsNullOrWhiteSpace(orNoTo))
+            //{
+            //    sql.AppendFormat(" and PRLSORD<='{0}' ", orNoTo);
+            //}
+            if (!string.IsNullOrWhiteSpace(venFrom))
+            {
+                sql.AppendFormat(" and PRLVND>='{0}' ", venFrom);
+            }
+            if (!string.IsNullOrWhiteSpace(venTo))
+            {
+                sql.AppendFormat(" and PRLVND<='{0}' ", venTo);
+            }
+            sql.AppendFormat(" and PRLCDTE between '{0}' and '{1}' ", dateFrom, dateTo);
+            //if (!string.IsNullOrWhiteSpace(dateFrom))
+            //{
+            //    sql.AppendFormat(" and PRLCDTE>='{0}' ", dateFrom);
+            //}
+            //if (!string.IsNullOrWhiteSpace(dateTo))
+            //{
+            //    sql.AppendFormat(" and PRLCDTE<='{0}' ", dateTo);
+            //}
+            if (!string.IsNullOrWhiteSpace(drawNoFrom))
+            {
+                sql.AppendFormat(" and PRLMNO>='{0}' ", drawNoFrom);
+            }
+            if (!string.IsNullOrWhiteSpace(drawNoTo))
+            {
+                sql.AppendFormat(" and PRLMNO<='{0}' ", drawNoTo);
+            }
+            if (!string.IsNullOrWhiteSpace(prlNo))
+            {
+                sql.AppendFormat(" and PRLTNO like N'%{0}%' ", prlNo);
+            }
+            if (!string.IsNullOrWhiteSpace(prlName))
+            {
+                sql.AppendFormat(" and bomnam like N'%{0}%' ", prlName);
+            }
+
+            return sql.ToString();
+        }
+
+        /// <summary>
+        /// 出货查询
+        /// </summary>
+        /// <returns></returns>
+        public DataTable ShipQuery(string orNo, string custNo, string dateFrom, string dateTo)
+        {
+            StringBuilder sql = new StringBuilder("");
+            sql.Append("select tsfcbomh.bomhmno mno2,* from shiping left join tsfcbomh on bomhwno=shipso where 1=1 ");
+            sql.AppendFormat(" and shipdate between '{0}' and '{1}' ", dateFrom, dateTo);
+            //if (!string.IsNullOrWhiteSpace(dateFrom))
+            //{
+            //    sql.AppendFormat(" and shipdate>='{0}' ", dateFrom);
+            //}
+            //if (!string.IsNullOrWhiteSpace(dateTo))
+            //{
+            //    sql.AppendFormat(" and shipdate<='{0}' ", dateTo);
+            //}
+            if (!string.IsNullOrWhiteSpace(orNo))
+            {
+                sql.AppendFormat(" and shipsono='{0}' ", orNo);
+            }
+            if (!string.IsNullOrWhiteSpace(custNo))
+            {
+                sql.AppendFormat(" and shipcustno='{0}' ", custNo);
+            }
+
+            return this.Query(sql.ToString());
         }
 
         /// <summary>

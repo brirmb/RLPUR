@@ -18,23 +18,23 @@
                     <li class="Caption">请购单号
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="PRNo" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="PRNoFrom" runat="server"></asp:TextBox>
                     </li>
                     <li class="Caption">~
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="ORDNO" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="PRNoTo" runat="server"></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Caption">工令号
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="PRStatus" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="OrNoFrom" runat="server"></asp:TextBox>
                     </li>
                     <li class="Caption">~
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="PRType" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="OrNoTo" runat="server"></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Caption">请购日期
@@ -51,40 +51,40 @@
                     <li class="Caption">厂商
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox1" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="VenFrom" runat="server"></asp:TextBox>
                     </li>
                     <li class="Caption">~
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox2" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="VenTo" runat="server"></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Caption">图号
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox3" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="DrawNoFrom" runat="server"></asp:TextBox>
                     </li>
                     <li class="Caption">~
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox4" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="DrawNoTo" runat="server"></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Caption">工件号
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox5" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="PrlNo" runat="server"></asp:TextBox>
                     </li>
                     <li class="Caption">工件名
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox6" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="PrlName" runat="server"></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Caption">总金额
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox7" runat="server" Enabled="False"></asp:TextBox>(RMB/元)
+                        <asp:TextBox ID="SumAmt" runat="server" Enabled="False"></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Button">
@@ -101,10 +101,10 @@
                 <asp:GridView ID="List" runat="server" EmptyDataText="<%$ Resources:iiWeb, EmptyData %>"
                     EnableModelValidation="True" DataKeyNames="prlseq" OnRowDataBound="List_RowDataBound">
                     <Columns>
-                        <asp:BoundField DataField="prlseq" HeaderText="请购单号" />
+                        <asp:BoundField DataField="PRLNO" HeaderText="请购单号" />
                         <asp:BoundField DataField="prlseq" HeaderText="序号" />
-                        <asp:BoundField DataField="prlseq" HeaderText="工令号" />
-                        <asp:BoundField DataField="prlseq" HeaderText="图号" />
+                        <asp:BoundField DataField="PRLSORD" HeaderText="工令号" />
+                        <asp:BoundField DataField="PRLMNO" HeaderText="图号" />
                         <asp:BoundField DataField="prltno" HeaderText="工件号" />
                         <asp:BoundField DataField="bomnam" HeaderText="工件名称" />
                         <asp:BoundField DataField="bommat" HeaderText="材质" />
@@ -114,10 +114,10 @@
                         <asp:BoundField DataField="prlvndm" HeaderText="厂商名称" />
                         <asp:BoundField DataField="prlpacst" HeaderText="单价" />
                         <asp:BoundField DataField="prlum" HeaderText="单位" />
-                        <asp:BoundField DataField="prlum" HeaderText="金额" />
+                        <asp:BoundField DataField="" HeaderText="金额" />
                         <asp:BoundField DataField="prlcur" HeaderText="币别" />
-                        <asp:BoundField DataField="prlum" HeaderText="请购日期" />
-                        <asp:BoundField DataField="PRLPDTE" HeaderText="交货期限" />
+                        <asp:BoundField DataField="prlcdte" HeaderText="请购日期" />
+                        <asp:BoundField DataField="prlpdte" HeaderText="交货期限" />
                     </Columns>
                 </asp:GridView>
             </div>
