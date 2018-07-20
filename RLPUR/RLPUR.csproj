@@ -108,6 +108,8 @@
     <Content Include="Web\CommonPur.aspx" />
     <Content Include="Web\MaterialPur.aspx" />
     <Content Include="Web\PurQuery.aspx" />
+    <EmbeddedResource Include="Web\ShipQuery.aspx.js" />
+    <EmbeddedResource Include="Web\PurQuery.aspx.js" />
     <Content Include="Web\ShipMaintain.aspx" />
     <Content Include="Web\ShipQuery.aspx" />
     <EmbeddedResource Include="Web\ShipMaintain.aspx.js" />
