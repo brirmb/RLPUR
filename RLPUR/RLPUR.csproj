@@ -107,9 +107,12 @@
     <Content Include="Framework\AuthorityDetail.aspx" />
     <Content Include="Web\CommonPur.aspx" />
     <Content Include="Web\MaterialPur.aspx" />
+    <Content Include="Web\PurCheck.aspx" />
+    <Content Include="Web\PurPrint.aspx" />
     <Content Include="Web\PurQuery.aspx" />
     <EmbeddedResource Include="Web\ShipQuery.aspx.js" />
     <EmbeddedResource Include="Web\PurQuery.aspx.js" />
+    <Content Include="Web\SelectCust.aspx" />
     <Content Include="Web\ShipMaintain.aspx" />
     <Content Include="Web\ShipQuery.aspx" />
     <EmbeddedResource Include="Web\ShipMaintain.aspx.js" />
@@ -304,6 +307,13 @@
     <Compile Include="Web\OutsidePur.aspx.designer.cs">
       <DependentUpon>OutsidePur.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web\PurCheck.aspx.cs">
+      <DependentUpon>PurCheck.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\PurCheck.aspx.designer.cs">
+      <DependentUpon>PurCheck.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Web\PurMaintain.aspx.cs">
       <DependentUpon>PurMaintain.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -311,12 +321,26 @@
     <Compile Include="Web\PurMaintain.aspx.designer.cs">
       <DependentUpon>PurMaintain.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web\PurPrint.aspx.cs">
+      <DependentUpon>PurPrint.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\PurPrint.aspx.designer.cs">
+      <DependentUpon>PurPrint.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Web\PurQuery.aspx.cs">
       <DependentUpon>PurQuery.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="Web\PurQuery.aspx.designer.cs">
       <DependentUpon>PurQuery.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\SelectCust.aspx.cs">
+      <DependentUpon>SelectCust.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\SelectCust.aspx.designer.cs">
+      <DependentUpon>SelectCust.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web\ShipMaintain.aspx.cs">
       <DependentUpon>ShipMaintain.aspx</DependentUpon>

@@ -92,14 +92,14 @@
                             OnClick="OKButton_Click" />
                         <asp:Button ID="CancelButton" runat="server" Text="取消"
                             OnClick="CancelButton_Click" />
-                        <asp:Button ID="ExcelButton" runat="server" Text="导出"
-                            CssClass="Highlighted" />
+                        <asp:Button ID="ExportButton" runat="server" Text="导出"
+                            CssClass="Highlighted" OnClick="ExportButton_Click" />
                     </li>
                 </ul>
             </div>
             <div class="List">
                 <asp:GridView ID="List" runat="server" EmptyDataText="<%$ Resources:iiWeb, EmptyData %>"
-                    EnableModelValidation="True" DataKeyNames="prlseq" OnRowDataBound="List_RowDataBound">
+                    EnableModelValidation="True" DataKeyNames="prlseq" OnPageIndexChanging="List_PageIndexChanging" OnRowDataBound="List_RowDataBound">
                     <Columns>
                         <asp:BoundField DataField="PRLNO" HeaderText="请购单号" />
                         <asp:BoundField DataField="prlseq" HeaderText="序号" />

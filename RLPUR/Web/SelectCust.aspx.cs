@@ -2,7 +2,6 @@
 using RLPUR.Models;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
@@ -10,11 +9,13 @@ using System.Web.UI.WebControls;
 
 namespace RLPUR.Web
 {
-    public partial class ShipQuery : LocalPage
+    public partial class SelectCust : LocalDialog
     {
         /// <summary>
         /// 页面加载
         /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!this.IsPostBack)
@@ -39,6 +40,7 @@ namespace RLPUR.Web
 
             #region 页面要素
 
+            //this.AssignDialogCallback(CancelButton, "'Close'", "window");
 
             #endregion
         }
@@ -52,47 +54,39 @@ namespace RLPUR.Web
         {
             #region 页面内容
 
-            ORDNO.Text = string.Empty;
-            DateFrom.Text = DateTime.Now.ToString("yyyy-MM-dd");
-            DateTo.Text = DateTime.Now.ToString("yyyy-MM-dd");
-            CUSTNO.Text = string.Empty;
-            CUSTNAME.Text = string.Empty;
-
             #endregion
 
-            //绑定列表
-            //this.BindList();
+            this.BindList();
         }
 
         #endregion
 
         #region 绑定数据
 
-        /// <summary>
-        /// 绑定列表
-        /// </summary>
         private void BindList()
         {
+
             using (PurProvider purProvider = new PurProvider())
             {
-                string dateFrom = LocalGlobal.ConvertDateFormat(DateFrom.Text.Trim()).ToString("yyyyMMdd");
-                string dateTo = LocalGlobal.ConvertDateFormat(DateTo.Text.Trim()).ToString("yyyyMMdd");
-                DataTable table = purProvider.ShipQuery(ORDNO.Text.Trim(), CUSTNO.Text.Trim(), dateFrom, dateTo);
-
-                List.DataSource = table;
+                List.DataSource = purProvider.GetCustomerByName(Name.Text.Trim());
             }
+
             List.DataBind();
         }
 
-        /// <summary>
-        /// 行绑定
-        /// </summary>
+        protected void List_PageIndexChanging(object sender, GridViewPageEventArgs e)
+        {
+            List.SelectedIndex = -1;
+            List.PageIndex = e.NewPageIndex;
+            this.BindList();
+        }
         protected void List_RowDataBound(object sender, GridViewRowEventArgs e)
         {
             switch (e.Row.RowType)
             {
                 //数据行
                 case DataControlRowType.DataRow:
+
                     #region 数据绑定
 
                     #endregion
@@ -106,47 +100,44 @@ namespace RLPUR.Web
                 default:
                     break;
             }
-        }
 
-        /// <summary>
-        /// 翻页
-        /// </summary>
-        protected void List_PageIndexChanging(object sender, GridViewPageEventArgs e)
-        {
-            List.PageIndex = e.NewPageIndex;
-            this.BindList();
         }
 
         #endregion
 
         #region 操作
 
-        /// <summary>
-        /// 确定
-        /// </summary>
-        protected void OKButton_Click(object sender, EventArgs e)
+        protected void SearchButton_Click(object sender, EventArgs e)
         {
             this.BindList();
         }
 
-        /// <summary>
-        /// 取消
-        /// </summary>
-        protected void CancelButton_Click(object sender, EventArgs e)
+        protected void OkButton_Click(object sender, EventArgs e)
         {
-            this.Initialize();
-        }
+            string returnStr = string.Empty;
 
-        protected void ExportButton_Click(object sender, EventArgs e)
-        {
-            this.List.AllowPaging = false;
-            this.BindList();
-            LocalGlobal.ToExcel(this.List, "出货查询");
-            this.List.AllowPaging = true;
-            this.BindList();
+            //for (int i = 0; i < List.Rows.Count; i++)
+            //{
+            //    HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)this.List.Rows[i].FindControl("RowCheck");
+
+            //    if (rowCheckControl.Checked == true)
+            //    {
+            //        returnStr = List.Rows[i].Cells[1].Text.Trim() + "," + List.Rows[i].Cells[2].Text.Trim();
+            //    }
+            //}
+
+            if (List.SelectedRow == null)
+            {
+                this.ShowErrorMessage("请选择客户");
+                return;
+            }
+            returnStr = List.SelectedRow.Cells[1].Text.Trim() + "," + List.SelectedRow.Cells[2].Text.Trim();
+            returnStr = "'" + returnStr + "'";
+
+            //回调
+            this.DialogCallback("'OK'", "{host:window,returnStr:" + returnStr + "}");
         }
 
         #endregion
-
     }
 }

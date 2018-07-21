@@ -10,7 +10,7 @@
 namespace RLPUR.Web {
     
     
-    public partial class ShipQuery {
+    public partial class SelectCust {
         
         /// <summary>
         /// form1 控件。
@@ -31,85 +31,40 @@ namespace RLPUR.Web {
         protected global::System.Web.UI.WebControls.Label PageTitle;
         
         /// <summary>
-        /// ORDNO 控件。
+        /// NameCaption 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox ORDNO;
+        protected global::System.Web.UI.WebControls.Label NameCaption;
         
         /// <summary>
-        /// CUSTNO 控件。
+        /// Name 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox CUSTNO;
+        protected global::System.Web.UI.WebControls.TextBox Name;
         
         /// <summary>
-        /// selCust 控件。
+        /// SearchButton 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.LinkButton selCust;
+        protected global::System.Web.UI.WebControls.Button SearchButton;
         
         /// <summary>
-        /// CUSTNAME 控件。
+        /// OkButton 控件。
         /// </summary>
         /// <remarks>
         /// 自动生成的字段。
         /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox CUSTNAME;
-        
-        /// <summary>
-        /// DateFrom 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox DateFrom;
-        
-        /// <summary>
-        /// DateTo 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox DateTo;
-        
-        /// <summary>
-        /// OKButton 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button OKButton;
-        
-        /// <summary>
-        /// CancelButton 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button CancelButton;
-        
-        /// <summary>
-        /// ExportButton 控件。
-        /// </summary>
-        /// <remarks>
-        /// 自动生成的字段。
-        /// 若要进行修改，请将字段声明从设计器文件移到代码隐藏文件。
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button ExportButton;
+        protected global::System.Web.UI.WebControls.Button OkButton;
         
         /// <summary>
         /// List 控件。

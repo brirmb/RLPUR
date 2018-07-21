@@ -124,6 +124,10 @@ namespace RLPUR.Models
             {
                 sql.AppendFormat(" and PRLSORD<='{0}' ", orNoTo);
             }
+            if (!string.IsNullOrWhiteSpace(prlName))
+            {
+                sql.AppendFormat(" and bomnam like N'%{0}%' ", prlName);
+            }
 
             string condition = GetPurQueryCondition(prNoFrom, prNoTo, orNoFrom, orNoTo, venFrom, venTo, dateFrom, dateTo,
                 drawNoFrom, drawNoTo, prlNo, prlName);
@@ -135,6 +139,10 @@ namespace RLPUR.Models
             sql.Append(" union ");
             sql.Append(" select prlno,prlseq,PRLSORD,PRLMNO,PRLTNO,prloutno,prlpicno,PRLSTATION,PRLQTY,PRLVND,prlvndm,PRLPACST,PRLUM,PRLCUR,prlcdte,prlpdte from purprl where prlsord='' ");
 
+            if (!string.IsNullOrWhiteSpace(prlName))
+            {
+                sql.AppendFormat(" and prloutno like N'%{0}%' ", prlName);
+            }
             if (!string.IsNullOrWhiteSpace(condition))
             {
                 sql.Append(condition);
@@ -196,10 +204,10 @@ namespace RLPUR.Models
             {
                 sql.AppendFormat(" and PRLTNO like N'%{0}%' ", prlNo);
             }
-            if (!string.IsNullOrWhiteSpace(prlName))
-            {
-                sql.AppendFormat(" and bomnam like N'%{0}%' ", prlName);
-            }
+            //if (!string.IsNullOrWhiteSpace(prlName))
+            //{
+            //    sql.AppendFormat(" and bomnam like N'%{0}%' ", prlName);
+            //}
 
             return sql.ToString();
         }
@@ -606,6 +614,16 @@ namespace RLPUR.Models
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// 查询客户（按姓名模糊）
+        /// </summary>
+        public DataTable GetCustomerByName(string name)
+        {
+            string sql = string.Format(" select * from salrcm where rcnam like N'%{0}%' order by rccust ", name);
+
+            return this.Query(sql);
         }
 
         #endregion

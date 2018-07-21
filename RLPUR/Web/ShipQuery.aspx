@@ -26,12 +26,12 @@
                     <li class="Caption">客户代码
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="PRStatus" runat="server"></asp:TextBox>
+                        <asp:TextBox ID="CUSTNO" runat="server" CssClass=""></asp:TextBox><asp:LinkButton ID="selCust" Style="display: inline-block;" runat="server" CssClass="ImageButton ImageButtonDetail" ToolTip="选择客户"></asp:LinkButton>
                     </li>
-                    <li class="Caption">客户代码
+                    <li class="Caption">客户名称
                     </li>
                     <li class="Content">
-                        <asp:TextBox ID="TextBox1" runat="server" Enabled="False"></asp:TextBox>
+                        <asp:TextBox ID="CUSTNAME" runat="server" CssClass=""></asp:TextBox>
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Caption">日期
@@ -50,24 +50,24 @@
                             OnClick="OKButton_Click" />
                         <asp:Button ID="CancelButton" runat="server" Text="取消"
                             OnClick="CancelButton_Click" />
-                        <asp:Button ID="ExcelButton" runat="server" Text="导出"
-                            CssClass="Highlighted" />
+                        <asp:Button ID="ExportButton" runat="server" Text="导出"
+                            CssClass="Highlighted" OnClick="ExportButton_Click" />
                     </li>
                 </ul>
             </div>
             <div class="List">
                 <asp:GridView ID="List" runat="server" EmptyDataText="<%$ Resources:iiWeb, EmptyData %>"
-                    EnableModelValidation="True" DataKeyNames="prlseq" OnRowDataBound="List_RowDataBound">
+                    EnableModelValidation="True" DataKeyNames="shipno" OnRowDataBound="List_RowDataBound" OnPageIndexChanging="List_PageIndexChanging">
                     <Columns>
-                        <asp:BoundField DataField="prlseq" HeaderText="出货单号" />
-                        <asp:BoundField DataField="prlseq" HeaderText="工令号" />
-                        <asp:BoundField DataField="prlseq" HeaderText="机种" />
-                        <asp:BoundField DataField="prltno" HeaderText="名称" />
-                        <asp:BoundField DataField="prlum" HeaderText="单位" />
-                        <asp:BoundField DataField="prlum" HeaderText="数量" />
-                        <asp:BoundField DataField="prlcur" HeaderText="日期" />
-                        <asp:BoundField DataField="prlum" HeaderText="客户代码" />
-                        <asp:BoundField DataField="PRLPDTE" HeaderText="客户名称" />
+                        <asp:BoundField DataField="shipno" HeaderText="出货单号" />
+                        <asp:BoundField DataField="shipsono" HeaderText="工令号" />
+                        <asp:BoundField DataField="shipmno" HeaderText="机种" />
+                        <asp:BoundField DataField="shipname" HeaderText="名称" />
+                        <asp:BoundField DataField="shipunit" HeaderText="单位" />
+                        <asp:BoundField DataField="shipqact" HeaderText="数量" />
+                        <asp:BoundField DataField="shipdate" HeaderText="日期" />
+                        <asp:BoundField DataField="shipcustno" HeaderText="客户代码" />
+                        <asp:BoundField DataField="shipcustname" HeaderText="客户名称" />
                     </Columns>
                 </asp:GridView>
             </div>

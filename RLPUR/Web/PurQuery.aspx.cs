@@ -10,7 +10,7 @@ using RLPUR.Models;
 
 namespace RLPUR.Web
 {
-    public partial class PurQuery : System.Web.UI.Page
+    public partial class PurQuery : LocalPage
     {
         /// <summary>
         /// 页面加载
@@ -58,12 +58,13 @@ namespace RLPUR.Web
             OrNoTo.Text = string.Empty;
             VenFrom.Text = string.Empty;
             VenTo.Text = string.Empty;
-            DateFrom.Text = string.Empty;
-            DateTo.Text = string.Empty;
+            DateFrom.Text = DateTime.Now.ToString("yyyy-MM-dd");
+            DateTo.Text = DateTime.Now.ToString("yyyy-MM-dd");
             DrawNoFrom.Text = string.Empty;
             DrawNoTo.Text = string.Empty;
             PrlNo.Text = string.Empty;
             PrlName.Text = string.Empty;
+            SumAmt.Text = string.Empty;
 
             #endregion
 
@@ -155,6 +156,8 @@ namespace RLPUR.Web
         protected void CancelButton_Click(object sender, EventArgs e)
         {
             this.Initialize();
+            List.DataSource = null;
+            List.DataBind();
         }
 
         protected void ExportButton_Click(object sender, EventArgs e)
