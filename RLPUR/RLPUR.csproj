@@ -46,6 +46,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Plusii.iiWeb, Version=2.1.4214.24345, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Plusii.iiWeb.dll</HintPath>
@@ -107,9 +108,14 @@
     <Content Include="Framework\AuthorityDetail.aspx" />
     <Content Include="Web\CommonPur.aspx" />
     <Content Include="Web\MaterialPur.aspx" />
+    <Content Include="Web\PrintReport.aspx" />
     <Content Include="Web\PurCheck.aspx" />
+    <EmbeddedResource Include="Web\PurCheck.aspx.js" />
     <Content Include="Web\PurPrint.aspx" />
     <Content Include="Web\PurQuery.aspx" />
+    <EmbeddedResource Include="Web\PurF.rdlc" />
+    <EmbeddedResource Include="Web\PurN.rdlc" />
+    <EmbeddedResource Include="Web\PurS.rdlc" />
     <EmbeddedResource Include="Web\ShipQuery.aspx.js" />
     <EmbeddedResource Include="Web\PurQuery.aspx.js" />
     <Content Include="Web\SelectCust.aspx" />
@@ -290,6 +296,11 @@
     <Compile Include="Web\CommonPur.aspx.designer.cs">
       <DependentUpon>CommonPur.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Web\DataSet1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Compile>
     <Compile Include="Web\GetVendor.ashx.cs">
       <DependentUpon>GetVendor.ashx</DependentUpon>
     </Compile>
@@ -306,6 +317,13 @@
     </Compile>
     <Compile Include="Web\OutsidePur.aspx.designer.cs">
       <DependentUpon>OutsidePur.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Web\PrintReport.aspx.cs">
+      <DependentUpon>PrintReport.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Web\PrintReport.aspx.designer.cs">
+      <DependentUpon>PrintReport.aspx</DependentUpon>
     </Compile>
     <Compile Include="Web\PurCheck.aspx.cs">
       <DependentUpon>PurCheck.aspx</DependentUpon>
@@ -376,6 +394,20 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web\GetVendor.ashx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Web\DataSet1.xsc">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Content>
+    <Content Include="App_Browsers\report.browser" />
+    <None Include="Web\DataSet1.xsd">
+      <SubType>Designer</SubType>
+      <Generator>MSDataSetGenerator</Generator>
+      <LastGenOutput>DataSet1.Designer.cs</LastGenOutput>
+    </None>
+    <Content Include="Web\DataSet1.xss">
+      <DependentUpon>DataSet1.xsd</DependentUpon>
+    </Content>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

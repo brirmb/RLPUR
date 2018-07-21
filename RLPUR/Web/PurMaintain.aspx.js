@@ -25,6 +25,29 @@ $(function () {
         getVendor(venNo, this);
     });
 
+    // 打印
+    $("#PrintButton").click(function () {
+        var prNo = $.trim($('#PRNo').val());
+        if (prNo.length == 0) {
+            iiWeb_ShowMessage('请输入请购单号');
+            return false;
+        }
+        //        window.open(
+        //            "PrintReport.aspx?ID={0}&Source=maintain".format(escape(prNo)),
+        //            "_blank",
+        //"height=600,width=750,location=no,toolbar=no,menubar=no,status=no,scrollbars=yes,resizable=yes"
+        //        );
+        //        return false;
+
+        iiWeb_ShowDialog(
+            "PrintReport.aspx?ID={0}&Source=maintain".format(escape(prNo)),
+            750,
+            600
+            );
+        return false;
+
+    });
+
 });
 
 //获取供应商

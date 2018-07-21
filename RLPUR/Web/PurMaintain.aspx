@@ -55,8 +55,7 @@
                             CssClass="Highlighted" OnClick="SaveButton_Click" />
                         <asp:Button ID="PostButton" runat="server" Text="提交"
                             CssClass="Highlighted" OnClick="PostButton_Click" />
-                        <%--         <asp:Button ID="PrintButton" runat="server" Text="打印"
-                            OnClick="PrintButton_Click" />--%>
+                        <asp:Button ID="PrintButton" runat="server" Text="打印" />
                     </li>
                 </ul>
             </div>

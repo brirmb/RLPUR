@@ -68,23 +68,54 @@ namespace RLPUR.Models
         }
 
         /// <summary>
-        /// 获取请购维护打印信息-非材料请购
+        /// 获取请购维护打印信息- N一般 F委外 S材料
         /// </summary>
-        public DataTable GetPRPrintNotMat(string prNo)
+        public DataTable GetPRMainPrint(string prType, string prNo)
         {
-            string sql = string.Format("select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlmno,prlum,prlstation,bommat,bomnam from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq and prhno= N'{0}' and prhid='RH' and prlid='RL' and prlpmt='Y' ", prNo);
+            string sql = string.Empty;
+            if (prType != "S")
+            {
+                sql = string.Format("select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlmno,prlvnd,prlvndm,prltno,prlum,prlstation,bommat,bomnam from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq and prhno= N'{0}' and prhid='RH' and prlid='RL' and prlpmt='Y' order by prlno,prlseq ", prNo);
+            }
+            else
+            {
+                sql = string.Format("select prlno,prlseq,prlqty,prlpacst,prlpdte,prlvndm,prltno,prlum,prlmrk,prloutno,prlpicno ,prhno from purprl,purprh where prhid='RH' and prlno=prhno and prhtyp='S' and prlno= N'{0}' order by prlno,prlseq ", prNo);
+            }
 
             return this.Query(sql);
         }
 
         /// <summary>
-        /// 获取请购维护打印信息-材料请购
+        /// 获取请购单打印信息- N一般 F委外 S材料
         /// </summary>
-        public DataTable GetPRPrintMat(string prNo)
+        public DataTable GetPROrderPrint(string prType, string prNoFrom, string prNoTo, string venNo)
         {
-            string sql = string.Format("select prlno,prlseq,prlqty,prlpacst,prlpdte,prlvndm,prltno,prlum,prlmrk,prloutno,prlpicno ,prhno from purprl,purprh where prhid='RH' and prlno=prhno and prhtyp='S' and prlno= N'{0}' ", prNo);
+            StringBuilder sql = new StringBuilder("");
+            if (prType != "S")
+            {
+                sql.AppendFormat("select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlmno,prlvnd,prlvndm,prltno,prlum,prlstation,bommat,bomnam from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq and prhid='RH' and prlid='RL' and prhtyp=N'{0}' ", prType);
+            }
+            else
+            {
+                sql.AppendFormat("select prlno,prlseq,prlqty,prlpacst,prlpdte,prlvndm,prltno,prlum,prlmrk,prloutno,prlpicno ,prhno from purprl,purprh where prhid='RH' and prlno=prhno and prhtyp=N'{0}' ", prType);
+            }
 
-            return this.Query(sql);
+            if (!string.IsNullOrWhiteSpace(prNoFrom))
+            {
+                sql.AppendFormat(" and prhno>={0} ", prNoFrom);
+            }
+            if (!string.IsNullOrWhiteSpace(prNoTo))
+            {
+                sql.AppendFormat(" and prhno<={0} ", prNoTo);
+            }
+            if (!string.IsNullOrWhiteSpace(venNo))
+            {
+                sql.AppendFormat(" and prlvnd={0} ", venNo);
+            }
+
+            sql.Append(" order by prhno,prlseq ");
+
+            return this.Query(sql.ToString());
         }
 
         /// <summary>
@@ -103,6 +134,26 @@ namespace RLPUR.Models
         public DataTable GetPRVendorList(string prNo)
         {
             string sql = string.Format("select distinct prlvndm from purprl where prlno=N'{0}' ", prNo);
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购核准列表
+        /// </summary>
+        public DataTable GetPRCheckList()
+        {
+            string sql = "select distinct PRHNO ,PRHCBY ,PRHCDTE ,PRHSTAT ,PRHTYP ,PRHSORD ,PRHMNO from purprh,purprl where PRHID='RH' and prlid='RL' and prhno=prlno and prlpmt='Y' and prlapr='N' order by prhno ";
+
+            return this.Query(sql);
+        }
+
+        /// <summary>
+        /// 获取请购核准明细
+        /// </summary>
+        public DataTable GetPRCheckDetail(string prNo)
+        {
+            string sql = string.Format("select purprl.*,(select idesc from iim where iid='IM' and iprod=prlprod) idesc,nvl((select fotfct from tsfcfot where fotwno=prlsord and prltno=fotpno and prlstation=fotsat and rownum<=1),0) fotfct from purprl where prlid='RL' and prlpmt='Y' and PRLAPR='N' and prlno=N'{0}' ", prNo);
 
             return this.Query(sql);
         }
@@ -418,6 +469,26 @@ namespace RLPUR.Models
         public string DeletePRDetailSql(string prNo)
         {
             string sql = string.Format("delete from purprl where prlno=N'{0}' ", prNo);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 请购核准
+        /// </summary>
+        public string ApprovePr(string prNo, string seq)
+        {
+            string sql = string.Format("update purprl set PRLAPR='Y' where prlno=N'{0}' and prlseq=N'{1}' ", prNo, seq);
+
+            return sql;
+        }
+
+        /// <summary>
+        /// 请购否决
+        /// </summary>
+        public string RejectPr(string prNo, string seq)
+        {
+            string sql = string.Format("update purprl set PRLAPR='R',prlpmt='N' where prlno=N'{0}' and prlseq=N'{1}' ", prNo, seq);
 
             return sql;
         }

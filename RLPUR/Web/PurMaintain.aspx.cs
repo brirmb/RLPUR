@@ -350,43 +350,44 @@ namespace RLPUR.Web
             this.BindList();
         }
 
-        /// <summary>
-        /// 打印
-        /// </summary>
-        protected void PrintButton_Click(object sender, EventArgs e)
-        {
-            #region 检测
+        ///// <summary>
+        ///// 打印
+        ///// </summary>
+        //protected void PrintButton_Click(object sender, EventArgs e)
+        //{
+        //    #region 检测
 
-            if (PRNo.Text.Trim().Length <= 0)
-            {
-                this.ShowWarningMessage("请输入请购单号！");
-                return;
-            }
+        //    if (PRNo.Text.Trim().Length <= 0)
+        //    {
+        //        this.ShowWarningMessage("请输入请购单号！");
+        //        return;
+        //    }
 
-            #endregion
+        //    #endregion
 
-            using (PurProvider purProvider = new PurProvider())
-            {
-                string prNo = PRNo.Text.Trim();
-                var pur = purProvider.GetPRDetail(prNo);
-                if (pur == null)
-                {
-                    this.ShowWarningMessage("请购单号码有误！");
-                    return;
-                }
+        //    using (PurProvider purProvider = new PurProvider())
+        //    {
+        //        string prNo = PRNo.Text.Trim();
+        //        var pur = purProvider.GetPRDetail(prNo);
+        //        if (pur == null)
+        //        {
+        //            this.ShowWarningMessage("请购单号码有误！");
+        //            return;
+        //        }
 
-                DataTable table = new DataTable();
-                //一般请购、委外请购数据源
-                table = purProvider.GetPRPrintNotMat(prNo);
+        //        string prType = pur["prhtyp"].ToString();
+        //        if (string.IsNullOrWhiteSpace(prType))
+        //        {
+        //            this.ShowWarningMessage("请购单号码有误！");
+        //            return;
+        //        }
 
+        //        //请购数据源
+        //        DataTable table = purProvider.GetPRMainPrint(prType.Trim(), prNo);
 
-                //材料请购数据源
-                table = purProvider.GetPRPrintMat(prNo);
+        //    }
 
-            }
-
-        }
-
+        //}
 
         #endregion
 

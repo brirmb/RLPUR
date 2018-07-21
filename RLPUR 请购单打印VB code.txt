@@ -1,0 +1,46 @@
+
+//TxtPRFrom请购单号起始 TxtPRTo请购单号止 txtVendor厂商代码
+//N一般 F委外 S材料
+
+Private Sub tblOperate_ButtonClick(ByVal Button As MSComctlLib.Button)
+    Select Case Button.Key
+        Case "Print"
+            Call PrtPR  //打印
+        Case "Exit"
+            Unload Me
+    End Select
+End Sub
+
+Private Function PrtPR()
+    If OptPrtN.Value = True Then
+        crtpr.ReportFileName = App.Path & "\TPUR_PR_N.RPT"
+        StrSql = "select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlvnd,prlvndm,prltno,prlum,bommat,bomnam " _
+        & "from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq " _
+        & "and prhid='RH' and prlid='RL' and prhtyp='N'"
+    ElseIf OptPrtF.Value = True Then
+        crtpr.ReportFileName = App.Path & "\TPUR_PR_F.RPT"
+        StrSql = "select prhno,prhsord,prlseq,prlqty,prlpacst,prlpdte,prlvnd,prlvndm,prltno,prlstation,prlum,bommat,bomnam " _
+        & "from purprh,purprl,tsfcbom where prhno=prlno and prlsord=bomwno and prlsoseq=bomseq " _
+        & "and prhid='RH' and prlid='RL' and prhtyp='F'"
+    ElseIf OptPrtS.Value = True Then
+        crtpr.ReportFileName = App.Path & "\TPUR_PR_S.RPT"
+        StrSql = "select prlno,prlseq,prlqty,prlpacst,prlpdte,prlvndm,prltno,prlum,prlmrk,prloutno,prlpicno" _
+            & ",prhno from purprl,purprh where prhid='RH' and prlno=prhno and prhtyp='S'"
+    End If
+    
+    If Trim(TxtPRFrom) <> "" Then
+        StrSql = StrSql & " and prhno>=" & Trim(TxtPRFrom)
+    End If
+    If Trim(TxtPRTo) <> "" Then
+        StrSql = StrSql & " and prhno<=" & Trim(TxtPRTo)
+    End If
+    If Trim(txtVendor) <> "" Then
+        StrSql = StrSql & " and prlvnd=" & Trim(txtVendor)
+    End If
+    StrSql = StrSql & " order by prhno,prlseq"
+    crtpr.SQLQuery = StrSql
+    crtpr.Destination = 0
+    crtpr.Connect = StrConn
+    crtpr.Action = 1
+    Exit Function
+End Function
