@@ -61,13 +61,10 @@
                         <asp:BoundField DataField="prlno" HeaderText="请购单号" />
                         <asp:BoundField DataField="prlseq" HeaderText="序号" />
                         <asp:BoundField DataField="prltno" HeaderText="工件号" />
-                        <asp:BoundField DataField="bomnam" HeaderText="名称" />
-                        <asp:BoundField DataField="bommat" HeaderText="材料" />
-                        <asp:BoundField DataField="prlrule" HeaderText="下料规格" />
-                        <asp:BoundField DataField="prlsoseq" HeaderText="工令序号" />
-                        <asp:BoundField DataField="bomreq" HeaderText="需求数量" />
-                        <asp:BoundField DataField="prlum" HeaderText="单位" />
-
+                        <asp:BoundField DataField="bomnam" HeaderText="工站" />
+                        <asp:BoundField DataField="bommat" HeaderText="数量" />
+                        <asp:BoundField DataField="prlrule" HeaderText="单位" />
+                        <asp:BoundField DataField="prlsoseq" HeaderText="需求日期" />
                     </Columns>
                 </asp:GridView>
             </div>

@@ -49,16 +49,16 @@ Private Sub GrdHead_DblClick()
                     grdDetail.AddItem True _
                     & vbTab & recRec.Fields("prlno").Value _                                            请购单号
                     & vbTab & recRec.Fields("prlseq").Value _                                           序号
-                    & vbTab & recRec.Fields("prlprod").Value _                                          
-                    & vbTab & recRec.Fields("prlmno").Value & "-" & recRec.Fields("prltno").Value _     
-                    & vbTab & recRec.Fields("prlstation").Value _
-                    & vbTab & recRec.Fields("prlqty").Value _
-                    & vbTab & recRec.Fields("prlvnd").Value _
-                    & vbTab & recRec.Fields("prlpacst").Value _
-                    & vbTab & recRec.Fields("prlcur").Value _
-                    & vbTab & recRec.Fields("fotfct").Value _
-                    & vbTab & recRec.Fields("prlplnh").Value _
-                    & vbTab & recRec.Fields("prldue").Value
+                    & vbTab & recRec.Fields("prlprod").Value _                                          工件
+                    & vbTab & recRec.Fields("prlmno").Value & "-" & recRec.Fields("prltno").Value _     工件号
+                    & vbTab & recRec.Fields("prlstation").Value _                                       工站
+                    & vbTab & recRec.Fields("prlqty").Value _                                           数量
+                    & vbTab & recRec.Fields("prlvnd").Value _                                           单位
+                    & vbTab & recRec.Fields("prlpacst").Value _                                         需求日期
+                    & vbTab & recRec.Fields("prlcur").Value _                                           currency
+                    & vbTab & recRec.Fields("fotfct").Value _                                           plan hour  
+                    & vbTab & recRec.Fields("prlplnh").Value _                                          hour  
+                    & vbTab & recRec.Fields("prldue").Value                                             plan due 
                     recRec.MoveNext
                 Wend
             End If
