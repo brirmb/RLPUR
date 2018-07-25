@@ -64,7 +64,7 @@
                         <asp:BoundField DataField="prlstation" HeaderText="工站" />
                         <asp:BoundField DataField="prlqty" HeaderText="数量" />
                         <asp:BoundField DataField="prlvnd" HeaderText="单位" />
-                        <asp:BoundField DataField="prldue" HeaderText="需求日期" />
+                        <asp:BoundField DataField="PRLPDTE" HeaderText="需求日期" />
                     </Columns>
                 </asp:GridView>
             </div>

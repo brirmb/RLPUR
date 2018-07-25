@@ -39,6 +39,56 @@ namespace RLPUR.Web
                 ViewState["CurrentSource"] = value;
             }
         }
+
+        private string PrType
+        {
+            get
+            {
+                object tempObject = ViewState["PrType"];
+                return (tempObject != null) ? (string)tempObject : string.Empty;
+            }
+            set
+            {
+                ViewState["PrType"] = value;
+            }
+        }
+        private string VenNo
+        {
+            get
+            {
+                object tempObject = ViewState["VenNo"];
+                return (tempObject != null) ? (string)tempObject : string.Empty;
+            }
+            set
+            {
+                ViewState["VenNo"] = value;
+            }
+        }
+        private string PrNoFrom
+        {
+            get
+            {
+                object tempObject = ViewState["PrNoFrom"];
+                return (tempObject != null) ? (string)tempObject : string.Empty;
+            }
+            set
+            {
+                ViewState["PrNoFrom"] = value;
+            }
+        }
+        private string PrNoTo
+        {
+            get
+            {
+                object tempObject = ViewState["PrNoTo"];
+                return (tempObject != null) ? (string)tempObject : string.Empty;
+            }
+            set
+            {
+                ViewState["PrNoTo"] = value;
+            }
+        }
+
         #endregion
 
         protected void Page_Load(object sender, EventArgs e)
@@ -58,6 +108,27 @@ namespace RLPUR.Web
                     this.CurrentSource = source.Trim();
                 }
 
+                string prType = Request.QueryString["prType"];
+                if (prType != null && prType.Trim().Length != 0)
+                {
+                    this.PrType = prType.Trim();
+                }
+                string venNo = Request.QueryString["venNo"];
+                if (venNo != null && venNo.Trim().Length != 0)
+                {
+                    this.VenNo = venNo.Trim();
+                }
+                string prNoFrom = Request.QueryString["prNoFrom"];
+                if (prNoFrom != null && prNoFrom.Trim().Length != 0)
+                {
+                    this.PrNoFrom = prNoFrom.Trim();
+                }
+                string prNoTo = Request.QueryString["prNoTo"];
+                if (prNoTo != null && prNoTo.Trim().Length != 0)
+                {
+                    this.PrNoTo = prNoTo.Trim();
+                }
+
                 #endregion
 
                 //初始化
@@ -72,7 +143,7 @@ namespace RLPUR.Web
         {
             string prNo = this.CurrentID;
 
-            DataTable table;
+            DataTable table = new DataTable();
             using (PurProvider purProvider = new PurProvider())
             {
                 if (CurrentSource == "maintain")
@@ -95,21 +166,21 @@ namespace RLPUR.Web
                         return;
                     }
 
+                    this.PrType = prType;
                     //请购数据源
-                    table = purProvider.GetPRMainPrint(prType, prNo);
+                    table = purProvider.GetPRMainPrint(this.PrType, prNo);
 
-                    string report = "RLPUR.Web.Pur" + prType + ".rdlc";
-                    Viewer.LocalReport.ReportEmbeddedResource = report;
-                    Viewer.LocalReport.DataSources.Clear();
-                    Viewer.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", table));
                 }
                 else if (CurrentSource == "print")
                 {
-
+                    table = purProvider.GetPROrderPrint(this.PrType, this.PrNoFrom, this.PrNoTo, this.VenNo);
                 }
             }
 
-
+            string report = "RLPUR.Web.Pur" + this.PrType + ".rdlc";
+            Viewer.LocalReport.ReportEmbeddedResource = report;
+            Viewer.LocalReport.DataSources.Clear();
+            Viewer.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", table));
         }
     }
 }

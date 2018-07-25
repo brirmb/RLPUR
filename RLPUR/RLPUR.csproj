@@ -112,6 +112,7 @@
     <Content Include="Web\PurCheck.aspx" />
     <EmbeddedResource Include="Web\PurCheck.aspx.js" />
     <Content Include="Web\PurPrint.aspx" />
+    <EmbeddedResource Include="Web\PurPrint.aspx.js" />
     <Content Include="Web\PurQuery.aspx" />
     <EmbeddedResource Include="Web\PurF.rdlc" />
     <EmbeddedResource Include="Web\PurN.rdlc" />

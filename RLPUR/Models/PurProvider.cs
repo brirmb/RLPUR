@@ -153,7 +153,8 @@ namespace RLPUR.Models
         /// </summary>
         public DataTable GetPRCheckDetail(string prNo)
         {
-            string sql = string.Format("select purprl.*,(select idesc from iim where iid='IM' and iprod=prlprod) idesc,nvl((select fotfct from tsfcfot where fotwno=prlsord and prltno=fotpno and prlstation=fotsat and rownum<=1),0) fotfct from purprl where prlid='RL' and prlpmt='Y' and PRLAPR='N' and prlno=N'{0}' ", prNo);
+            //string sql = string.Format("select purprl.*,(select idesc from iim where iid='IM' and iprod=prlprod) idesc,nvl((select fotfct from tsfcfot where fotwno=prlsord and prltno=fotpno and prlstation=fotsat and rownum<=1),0) fotfct from purprl where prlid='RL' and prlpmt='Y' and PRLAPR='N' and prlno=N'{0}' ", prNo);
+            string sql = string.Format("select purprl.* from purprl where prlid='RL' and prlpmt='Y' and PRLAPR='N' and prlno=N'{0}' ", prNo);
 
             return this.Query(sql);
         }

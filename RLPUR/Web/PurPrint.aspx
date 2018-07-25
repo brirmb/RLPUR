@@ -41,8 +41,7 @@
                     </li>
                     <li class="LineFeed"></li>
                     <li class="Button">
-                        <asp:Button ID="OKButton" runat="server" Text="打印"
-                            OnClick="OKButton_Click" />
+                        <asp:Button ID="OKButton" runat="server" Text="打印" />
                         <asp:Button ID="CancelButton" runat="server" Text="取消"
                             OnClick="CancelButton_Click" />
                     </li>

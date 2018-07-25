@@ -168,7 +168,7 @@ namespace RLPUR.Web
                 try
                 {
                     bool flag = false;
-                    foreach (GridViewRow row in List.Rows)
+                    foreach (GridViewRow row in DetailList.Rows)
                     {
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                         if (rowCheckControl.Checked)
@@ -222,7 +222,7 @@ namespace RLPUR.Web
                 try
                 {
                     bool flag = false;
-                    foreach (GridViewRow row in List.Rows)
+                    foreach (GridViewRow row in DetailList.Rows)
                     {
                         HtmlInputCheckBox rowCheckControl = (HtmlInputCheckBox)row.FindControl("RowCheck");
                         if (rowCheckControl.Checked)

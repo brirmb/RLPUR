@@ -35,13 +35,13 @@ $(function () {
         //        window.open(
         //            "PrintReport.aspx?ID={0}&Source=maintain".format(escape(prNo)),
         //            "_blank",
-        //"height=600,width=750,location=no,toolbar=no,menubar=no,status=no,scrollbars=yes,resizable=yes"
+        //"height=600,width=800,location=no,toolbar=no,menubar=no,status=no,scrollbars=yes,resizable=yes"
         //        );
         //        return false;
 
         iiWeb_ShowDialog(
             "PrintReport.aspx?ID={0}&Source=maintain".format(escape(prNo)),
-            750,
+            800,
             600
             );
         return false;

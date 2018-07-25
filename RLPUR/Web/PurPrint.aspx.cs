@@ -65,25 +65,20 @@ namespace RLPUR.Web
 
         #region 操作
 
-        /// <summary>
-        /// 打印
-        /// </summary>
-        protected void OKButton_Click(object sender, EventArgs e)
-        {
-            using (PurProvider purProvider = new PurProvider())
-            {
-                string prType = PrType.SelectedValue;
+        ///// <summary>
+        ///// 打印
+        ///// </summary>
+        //protected void OKButton_Click(object sender, EventArgs e)
+        //{
+        //    using (PurProvider purProvider = new PurProvider())
+        //    {
+        //        string prType = PrType.SelectedValue;
 
-                //请购数据源
-                DataTable table = purProvider.GetPROrderPrint(prType, PRNoFrom.Text.Trim(), PRNoTo.Text.Trim(), VenNo.Text.Trim());
+        //        //请购数据源
+        //        DataTable table = purProvider.GetPROrderPrint(prType, PRNoFrom.Text.Trim(), PRNoTo.Text.Trim(), VenNo.Text.Trim());
 
-
-
-
-            }
-
-
-        }
+        //    }
+        //}
 
         /// <summary>
         /// 取消
